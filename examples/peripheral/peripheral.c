@@ -38,6 +38,13 @@
 #define TEMPERATURE_CHAR_UUID "00002a1c-0000-1000-8000-00805f9b34fb"
 #define CUD_CHAR "00002901-0000-1000-8000-00805f9b34fb"
 
+// "BLE Reader" Primary Service
+#define M3_TUX_SERVICE_UUID "0000fff0-0000-1000-8000-00805f9b34fb"
+// Characteristic 1. Used to receive thus as Write property 
+#define M3_TUX_CHAR_RX_UUID "0000fff1-0000-1000-8000-00805f9b34fb"
+// Characteristic 2. Used to transmit thus as Notify property
+#define M3_TUX_CHAR_TX_UUID "0000fff2-0000-1000-8000-00805f9b34fb"
+
 GMainLoop *loop = NULL;
 Adapter *default_adapter = NULL;
 Advertisement *advertisement = NULL;
@@ -62,39 +69,49 @@ void on_central_state_changed(Adapter *adapter, Device *device) {
     }
 }
 
-const char *on_local_char_read(const Application *application, const char *address, const char *service_uuid,
-                        const char *char_uuid) {
-    if (g_str_equal(service_uuid, HTS_SERVICE_UUID) && g_str_equal(char_uuid, TEMPERATURE_CHAR_UUID)) {
+
+const char *m3_charRxCB(const Application *application, const char *address,
+                        const char *service_uuid, const char *char_uuid) 
+{
+    if (g_str_equal(service_uuid, M3_TUX_SERVICE_UUID) && g_str_equal(char_uuid, M3_TUX_CHAR_RX_UUID)) 
+    {
         const guint8 bytes[] = {0x06, 0x6f, 0x01, 0x00, 0xff, 0xe6, 0x07, 0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
         GByteArray *byteArray = g_byte_array_sized_new(sizeof(bytes));
+    
         g_byte_array_append(byteArray, bytes, sizeof(bytes));
         binc_application_set_char_value(application, service_uuid, char_uuid, byteArray);
+    
         return NULL;
     }
+
     return BLUEZ_ERROR_REJECTED;
 }
 
-const char *on_local_char_write(const Application *application, const char *address, const char *service_uuid,
-                          const char *char_uuid, GByteArray *byteArray) {
-    return NULL;
-}
 
-void on_local_char_start_notify(const Application *application, const char *service_uuid, const char *char_uuid) {
+void m3_charTx(const Application *application, const char *service_uuid, const char *char_uuid) 
+{
     log_debug(TAG, "on start notify");
-    if (g_str_equal(service_uuid, HTS_SERVICE_UUID) && g_str_equal(char_uuid, TEMPERATURE_CHAR_UUID)) {
-        const guint8 bytes[] = {0x06, 0x6A, 0x01, 0x00, 0xff, 0xe6, 0x07, 0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
+
+    if (g_str_equal(service_uuid, M3_TUX_SERVICE_UUID) && 
+        g_str_equal(char_uuid, M3_TUX_CHAR_TX_UUID)) 
+    {
+        const guint8 bytes[] = {0x06, 0x6A, 0x01, 0x00, 0xff, 0xe6, 
+                                0x07, 0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
         GByteArray *byteArray = g_byte_array_sized_new(sizeof(bytes));
+        
         g_byte_array_append(byteArray, bytes, sizeof(bytes));
         binc_application_notify(application, service_uuid, char_uuid, byteArray);
         g_byte_array_free(byteArray, TRUE);
     }
 }
 
-void on_local_char_stop_notify(const Application *application, const char *service_uuid, const char *char_uuid) {
+void on_local_char_stop_notify( const Application *application, const char *service_uuid, 
+                                const char *char_uuid) 
+{
     log_debug(TAG, "on stop notify");
 }
 
-gboolean callback(gpointer data) {
+gboolean terminationCb(gpointer data) {
     if (app != NULL) {
         binc_adapter_unregister_application(default_adapter, app);
         binc_application_free(app);
@@ -118,7 +135,7 @@ gboolean callback(gpointer data) {
 static void cleanup_handler(int signo) {
     if (signo == SIGINT) {
         log_error(TAG, "received SIGINT");
-        callback(loop);
+        terminationCb(loop);
     }
 }
 
@@ -150,37 +167,53 @@ int main(void) {
 
         // Setup advertisement
         GPtrArray *adv_service_uuids = g_ptr_array_new();
-        g_ptr_array_add(adv_service_uuids, HTS_SERVICE_UUID);
+        g_ptr_array_add(adv_service_uuids, M3_TUX_SERVICE_UUID);
 
         advertisement = binc_advertisement_create();
-        binc_advertisement_set_local_name(advertisement, "BINC");
+        binc_advertisement_set_local_name(advertisement, "TUX_BLE");
         binc_advertisement_set_services(advertisement, adv_service_uuids);
         g_ptr_array_free(adv_service_uuids, TRUE);
         binc_adapter_start_advertising(default_adapter, advertisement);
 
-        // Start application
-        app = binc_create_application(default_adapter);
-        binc_application_add_service(app, HTS_SERVICE_UUID);
+        // Start application and add primary service
+        app = binc_create_application(default_adapter); 
+        binc_application_add_service(app, M3_TUX_SERVICE_UUID);
+        
+        //Create RX char
         binc_application_add_characteristic(
                 app,
-                HTS_SERVICE_UUID,
-                TEMPERATURE_CHAR_UUID,
-                GATT_CHR_PROP_INDICATE);
+                M3_TUX_SERVICE_UUID,
+                M3_TUX_CHAR_RX_UUID,
+                GATT_CHR_PROP_WRITE);
         binc_application_add_descriptor(
                 app,
-                HTS_SERVICE_UUID,
-                TEMPERATURE_CHAR_UUID,
+                M3_TUX_SERVICE_UUID,
+                M3_TUX_CHAR_RX_UUID,
                 CUD_CHAR,
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
+
+        //Create TX char
+        binc_application_add_characteristic(
+                app,
+                M3_TUX_SERVICE_UUID,
+                M3_TUX_CHAR_TX_UUID,
+                GATT_CHR_PROP_NOTIFY);
+        binc_application_add_descriptor(
+                app,
+                M3_TUX_SERVICE_UUID,
+                M3_TUX_CHAR_TX_UUID,
+                CUD_CHAR,
+                GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
+
 
         const guint8 cud[] = "hello there";
         GByteArray *cudArray = g_byte_array_sized_new(sizeof(cud));
         g_byte_array_append(cudArray, cud, sizeof(cud));
-        binc_application_set_desc_value(app, HTS_SERVICE_UUID, TEMPERATURE_CHAR_UUID, CUD_CHAR, cudArray);
+        binc_application_set_desc_value(app, M3_TUX_SERVICE_UUID, M3_TUX_CHAR_RX_UUID, CUD_CHAR, cudArray);
 
-        binc_application_set_char_read_cb(app, &on_local_char_read);
-        binc_application_set_char_write_cb(app, &on_local_char_write);
-        binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
+        binc_application_set_char_read_cb(app, &m3_charRxCB);
+        //binc_application_set_char_write_cb(app, &m3_charTx);
+        binc_application_set_char_start_notify_cb(app, &m3_charTx);
         binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
         binc_adapter_register_application(default_adapter, app);
     } else {
@@ -188,7 +221,7 @@ int main(void) {
     }
 
     // Bail out after some time
-    g_timeout_add_seconds(600, callback, loop);
+    g_timeout_add_seconds(600, terminationCb, loop);
 
     // Start the mainloop
     g_main_loop_run(loop);
