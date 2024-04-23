@@ -57,3 +57,8 @@ cmake-build-release/
 
 .vscode/*
 build/*
+
+CMakeFiles
+Makefile
+CMakeCache.txt
+*.cmake

@@ -11,4 +11,4 @@ pkg_check_modules(GLIB glib-2.0 gio-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
 add_subdirectory(binc)
-add_subdirectory(ble_reader/ble_reader.c)
+add_subdirectory(ble_reader/)
