@@ -1,3 +1,13 @@
+/**
+ * @file ble_reader.c
+ * @author Luís Conceição (luis.conceicao@actuasys.com)
+ * @brief This file is the main top level file for the BLE reader application deamon 
+ * @version 0.1
+ * @date 2024-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 /*
  *   Copyright (c) 2022 Martijn van Welie
  *
@@ -21,6 +31,9 @@
  *
  */
 
+/*
+ * *********************** Includes *******************************************
+ */
 #include <glib.h>
 #include <stdio.h>
 #include <signal.h>
@@ -33,6 +46,9 @@
 #include "utility.h"
 #include "parser.h"
 
+/*
+ * ********************** Defines **********************************************
+ */
 #define TAG "Main"
 #define CUD_CHAR "00002901-0000-1000-8000-00805f9b34fb"
 
@@ -43,19 +59,118 @@
 // Characteristic 2. Used to transmit thus as Notify property
 #define M3_TUX_CHAR_2_UUID "0000fff2-0000-1000-8000-00805f9b34fb"
 
-
+/*
+ * *********************** Private Variables **********************************
+ */
 GMainLoop *loop = NULL;
 Adapter *default_adapter = NULL;
+GPtrArray *adv_service_uuids = NULL;
 Advertisement *advertisement = NULL;
 Application *app = NULL;
 
 
+/*
+ * ********************** Private Function Prototypes **************************
+ */
+void on_powered_state_changed(Adapter *adapter, gboolean state);
+void on_central_state_changed(Adapter *adapter, Device *device);
+const char *on_local_char_read( const Application *application, const char *address,
+                                const char *service_uuid, const char *char_uuid);
+const char *on_local_char_write(const Application *application, const char *address, 
+        const char *service_uuid, const char *char_uuid, GByteArray *byteArray);
+void on_local_char_start_notify(const Application *application,
+                                const char *service_uuid, const char *char_uuid);
+void on_local_char_stop_notify(const Application *application, 
+                                const char *service_uuid, const char *char_uuid);
+gboolean callback(gpointer data);
+static void cleanup_handler(int signo);
+
+// --------- M3 ----------
+int32_t m3_bleReaderInit();
+
+/*
+ * ********************** Function definitions *********************************
+ */
+
+/**
+ * @brief   Top level functio. Here the the low level DBus and BlueZ stuff is 
+ *  handled and initialized.
+ *          Services and Characteristics are added.
+ *          Aplication is started.
+ * @return int 
+ */
+int main(void) {
+    
+    // Get a DBus connection
+    GDBusConnection *dbusConnection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
+
+    // Setup handler for CTRL+C
+    if (signal(SIGINT, cleanup_handler) == SIG_ERR)
+    {    
+        log_error(TAG, "can't catch SIGINT");
+    }
+
+    // Setup mainloop
+    loop = g_main_loop_new(NULL, FALSE);
+    // Get the default default_adapter
+    default_adapter = binc_adapter_get_default(dbusConnection);
+
+    if (default_adapter != NULL) 
+    {
+        log_debug(TAG, "using default_adapter '%s'", 
+                        binc_adapter_get_path(default_adapter));
+
+        // Make sure the adapter is on
+        binc_adapter_set_powered_state_cb(   default_adapter, 
+                                            &on_powered_state_changed);
+        if (!binc_adapter_get_powered_state(default_adapter)) 
+        {
+            binc_adapter_power_on(default_adapter);
+        }
+
+        //Start Services and Characteristics
+        m3_bleReaderInit();
+    } 
+    else 
+    {
+        log_debug("MAIN", "No default_adapter found");
+    }
+
+    // Bail out after some time
+    g_timeout_add_seconds(600, callback, loop);
+
+    // Start the mainloop
+    g_main_loop_run(loop);
+
+    // Clean up mainloop
+    g_main_loop_unref(loop);
+
+    // Disconnect from DBus
+    g_dbus_connection_close_sync(dbusConnection, NULL, NULL);
+    g_object_unref(dbusConnection);
+    return 0;
+}
+
+
+
+/**
+ * @brief 
+ * 
+ * @param adapter 
+ * @param state 
+ */
 void on_powered_state_changed(Adapter *adapter, gboolean state) 
 {
     log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
                                     binc_adapter_get_path(adapter));
 }
 
+/**
+ * @brief 
+ * 
+ * @param adapter 
+ * @param device 
+ */
 void on_central_state_changed(Adapter *adapter, Device *device)
 {
     char *deviceToString = binc_device_to_string(device);
@@ -72,6 +187,16 @@ void on_central_state_changed(Adapter *adapter, Device *device)
     }
 }
 
+
+/**
+ * @brief 
+ * 
+ * @param application 
+ * @param address 
+ * @param service_uuid 
+ * @param char_uuid 
+ * @return const char* 
+ */
 const char *on_local_char_read( const Application *application, const char *address,
                                 const char *service_uuid, const char *char_uuid) 
 {
@@ -87,6 +212,17 @@ const char *on_local_char_read( const Application *application, const char *addr
     return BLUEZ_ERROR_NOT_SUPPORTED;
 }
 
+
+/**
+ * @brief 
+ * 
+ * @param application 
+ * @param address 
+ * @param service_uuid 
+ * @param char_uuid 
+ * @param byteArray 
+ * @return const char* 
+ */
 const char *on_local_char_write(const Application *application, const char *address, 
         const char *service_uuid, const char *char_uuid, GByteArray *byteArray) 
 {    
@@ -107,12 +243,14 @@ const char *on_local_char_write(const Application *application, const char *addr
     return NULL;
 }
 
-void on_local_char_updated(const Application *application, 
-        const char *service_uuid, const char *char_uuid, GByteArray *byteArray)
-{
-    log_debug(TAG, "on char updated");
-}
 
+/**
+ * @brief 
+ * 
+ * @param application 
+ * @param service_uuid 
+ * @param char_uuid 
+ */
 void on_local_char_start_notify(const Application *application,
                                 const char *service_uuid, const char *char_uuid)
 {
@@ -149,37 +287,27 @@ void on_local_char_start_notify(const Application *application,
                 // }
 }
 
+
+/**
+ * @brief 
+ * 
+ * @param application 
+ * @param service_uuid 
+ * @param char_uuid 
+ */
 void on_local_char_stop_notify(const Application *application, 
                                 const char *service_uuid, const char *char_uuid)
 {
     log_debug(TAG, "on stop notify");
 }
- 
-/**
- * @brief This callback is called just before the descriptor's value is returned. 
- *          Use it to update the descriptor before it is read
- * 
- */
-const char *on_local_desc_read(const Application *application, const char *address, 
-            const char *service_uuid, const char *char_uuid, const char *desc_uuid)
-{
 
-    return NULL;
-}
 
 /**
- * @brief This callback is called just before the descriptor's value is set.
- * Use it to accept (return NULL), or reject (return BLUEZ_ERROR_*) the byte array
+ * @brief 
  * 
+ * @param data 
+ * @return gboolean 
  */
-const char *on_local_desc_write( const Application *application, const char *address,
-                                const char *service_uuid, const char *char_uuid,
-                                const char *desc_uuid, const GByteArray *byteArray)
-{
-    return NULL;
-}
-
-
 gboolean callback(gpointer data) {
     if (app != NULL) {
         binc_adapter_unregister_application(default_adapter, app);
@@ -201,6 +329,12 @@ gboolean callback(gpointer data) {
     return FALSE;
 }
 
+
+/**
+ * @brief 
+ * 
+ * @param signo 
+ */
 static void cleanup_handler(int signo) {
     if (signo == SIGINT) {
         log_error(TAG, "received SIGINT");
@@ -208,108 +342,82 @@ static void cleanup_handler(int signo) {
     }
 }
 
-int main(void) {
-    // Get a DBus connection
-    GDBusConnection *dbusConnection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
 
-    // Setup handler for CTRL+C
-    if (signal(SIGINT, cleanup_handler) == SIG_ERR)
-    {    
-        log_error(TAG, "can't catch SIGINT");
-    }
-    // Setup mainloop
-    loop = g_main_loop_new(NULL, FALSE);
-    // Get the default default_adapter
-    default_adapter = binc_adapter_get_default(dbusConnection);
+/*
+ * --------------- M3 definitions ------------
+*/
 
-    if (default_adapter != NULL) 
-    {
-        log_debug(TAG, "using default_adapter '%s'", 
-                        binc_adapter_get_path(default_adapter));
+/**
+ * @brief Initializes
+ * 
+ * @param app 
+ * @return int32_t 
+ */
+int32_t m3_bleReaderInit()
+{
+    // Setup remote central connection state callback
+    binc_adapter_set_remote_central_cb(default_adapter, &on_central_state_changed);
 
-        // Make sure the adapter is on
-        binc_adapter_set_powered_state_cb(   default_adapter, 
-                                            &on_powered_state_changed);
-        if (!binc_adapter_get_powered_state(default_adapter)) 
-        {
-            binc_adapter_power_on(default_adapter);
-        }
+    // Setup advertisement
+    adv_service_uuids = g_ptr_array_new();
+    g_ptr_array_add(adv_service_uuids, M3_TUX_SERVICE_UUID);
 
-        // Setup remote central connection state callback
-        binc_adapter_set_remote_central_cb(default_adapter, &on_central_state_changed);
+    advertisement = binc_advertisement_create();
+    binc_advertisement_set_local_name(advertisement, "TUX_BLE");
+    binc_advertisement_set_services(advertisement, adv_service_uuids);
+    g_ptr_array_free(adv_service_uuids, TRUE);
+    binc_adapter_start_advertising(default_adapter, advertisement);
 
-        // Setup advertisement
-        GPtrArray *adv_service_uuids = g_ptr_array_new();
-        g_ptr_array_add(adv_service_uuids, M3_TUX_SERVICE_UUID);
+    // Start application
+    app = binc_create_application(default_adapter);
 
-        advertisement = binc_advertisement_create();
-        binc_advertisement_set_local_name(advertisement, "BINC");
-        binc_advertisement_set_services(advertisement, adv_service_uuids);
-        g_ptr_array_free(adv_service_uuids, TRUE);
-        binc_adapter_start_advertising(default_adapter, advertisement);
+    // Add Primary Service
+    binc_application_add_service(app, M3_TUX_SERVICE_UUID);
+    
+    // Add characteristic 1 - RX with "Write". Also, add description to char 1 
+    binc_application_add_characteristic(
+            app,
+            M3_TUX_SERVICE_UUID,
+            M3_TUX_CHAR_1_UUID,
+            GATT_CHR_PROP_WRITE);
+    binc_application_add_descriptor(
+            app,
+            M3_TUX_SERVICE_UUID,
+            M3_TUX_CHAR_1_UUID,
+            CUD_CHAR,
+            GATT_CHR_PROP_READ);
 
-        // Start application
-        app = binc_create_application(default_adapter);
+    binc_application_add_characteristic(
+            app,
+            M3_TUX_SERVICE_UUID,
+            M3_TUX_CHAR_2_UUID,
+            GATT_CHR_PROP_INDICATE);
+    binc_application_add_descriptor(
+            app,
+            M3_TUX_SERVICE_UUID,
+            M3_TUX_CHAR_2_UUID,
+            CUD_CHAR,
+            GATT_CHR_PROP_READ);
 
-        // Add Primary Service
-        binc_application_add_service(app, M3_TUX_SERVICE_UUID);
-        
-        // Add characteristic 1 - RX with "Write". Also, add description to char 1 
-        binc_application_add_characteristic(
-                app,
-                M3_TUX_SERVICE_UUID,
-                M3_TUX_CHAR_1_UUID,
-                GATT_CHR_PROP_WRITE);
-        // binc_application_add_descriptor(
-        //         app,
-        //         M3_TUX_SERVICE_UUID,
-        //         M3_TUX_CHAR_1_UUID,
-        //         CUD_CHAR,
-        //         GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
+    const guint8 desc_char1[] = "Characteristic 1";
+    const guint8 desc_char2[] = "Characteristic 2";
+    GByteArray *desc_char1_array = g_byte_array_sized_new(sizeof(desc_char1));
+    GByteArray *desc_char2_array = g_byte_array_sized_new(sizeof(desc_char2));
+    g_byte_array_append(desc_char1_array, desc_char1, sizeof(desc_char1));
+    g_byte_array_append(desc_char2_array, desc_char2, sizeof(desc_char2));
+    binc_application_set_desc_value(app, M3_TUX_SERVICE_UUID, 
+                                    M3_TUX_CHAR_1_UUID, CUD_CHAR, desc_char1_array);
+    binc_application_set_desc_value(app, M3_TUX_SERVICE_UUID, 
+                                    M3_TUX_CHAR_2_UUID, CUD_CHAR, desc_char2_array);
 
-        binc_application_add_characteristic(
-                app,
-                M3_TUX_SERVICE_UUID,
-                M3_TUX_CHAR_2_UUID,
-                GATT_CHR_PROP_INDICATE);
+    // Set callbacks
+    binc_application_set_char_read_cb(app, &on_local_char_read);
+    binc_application_set_char_write_cb(app, &on_local_char_write);
+    
+    binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
+    binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
+    
+    binc_adapter_register_application(default_adapter, app);
 
-        const guint8 cud[] = "hello there";
-        GByteArray *cudArray = g_byte_array_sized_new(sizeof(cud));
-        g_byte_array_append(cudArray, cud, sizeof(cud));
-        // binc_application_set_desc_value(app, M3_TUX_SERVICE_UUID, 
-        //                                 TEMPERATURE_CHAR_UUID, CUD_CHAR, cudArray);
-
-        // Set callbacks
-        binc_application_set_char_read_cb(app, &on_local_char_read);
-        binc_application_set_char_write_cb(app, &on_local_char_write);
-
-        //binc_application_set_char_update_cb(app, &on_local_char_updated); //does not exist
-        
-        binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
-        binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
-        
-        binc_application_set_desc_read_cb(app, &on_local_desc_read);    
-        binc_application_set_desc_write_cb(app, &on_local_desc_write);
-
-
-        binc_adapter_register_application(default_adapter, app);
-    } 
-    else 
-    {
-        log_debug("MAIN", "No default_adapter found");
-    }
-
-    // Bail out after some time
-    g_timeout_add_seconds(600, callback, loop);
-
-    // Start the mainloop
-    g_main_loop_run(loop);
-
-    // Clean up mainloop
-    g_main_loop_unref(loop);
-
-    // Disconnect from DBus
-    g_dbus_connection_close_sync(dbusConnection, NULL, NULL);
-    g_object_unref(dbusConnection);
     return 0;
 }
