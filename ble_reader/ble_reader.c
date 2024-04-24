@@ -37,6 +37,21 @@
 #include <glib.h>
 #include <stdio.h>
 #include <signal.h>
+
+#include <stdio.h>   /* Standard input/output definitions */
+#include <string.h>  /* String function definitions */
+#include <unistd.h>  /* UNIX standard function definitions */
+#include <fcntl.h>   /* File control definitions */
+#include <errno.h>   /* Error number definitions */
+#include <ctype.h>
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <sys/msg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "adapter.h"
 #include "device.h"
 #include "logger.h"
@@ -45,6 +60,7 @@
 #include "advertisement.h"
 #include "utility.h"
 #include "parser.h"
+#include <syslog.h>
 
 /*
  * ********************** Defines **********************************************
@@ -268,23 +284,7 @@ void on_local_char_start_notify(const Application *application,
         return;
     }
     
-    /**
-     * TODO: Set necessary flags
-     * 
-     */
-    
-
-    
-                // if(!g_str_equal(char_uuid, M3_TUX_CHAR_2_UUID)) 
-                // {
-                //     const guint8 bytes[] = {0x06, 0x6A, 0x01, 0x00, 0xff, 0xe6, 0x07, 
-                //                             0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
-                //     GByteArray *byteArray = g_byte_array_sized_new(sizeof(bytes));
-
-                //     g_byte_array_append(byteArray, bytes, sizeof(bytes));
-                //     binc_application_notify(application, service_uuid, char_uuid, byteArray);
-                //     g_byte_array_free(byteArray, TRUE);
-                // }
+    log_info(TAG, "Notifications Enabled...");
 }
 
 
@@ -299,6 +299,7 @@ void on_local_char_stop_notify(const Application *application,
                                 const char *service_uuid, const char *char_uuid)
 {
     log_debug(TAG, "on stop notify");
+    log_info(TAG, "Notifications Disabled...");
 }
 
 
