@@ -1,2 +1,3 @@
 add_executable(ble_reader ble_reader.c)
 target_link_libraries(ble_reader Binc)
+target_link_libraries(ble_reader Common)

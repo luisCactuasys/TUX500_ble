@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(bluez_inc C)
+project(bluez_inc CXX)
 
-set(CMAKE_C_STANDARD 99)
+#set(CMAKE_C_STANDARD 99)
 
 # Show all the warnings
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter")
@@ -14,8 +14,8 @@ add_subdirectory(binc)
 add_subdirectory(ble_reader)
 add_subdirectory(ArduinoJson)
 add_subdirectory(common)
-include_directories(ArduinoJson)
-include_directories(common)
+# include_directories(ArduinoJson)
+# include_directories(common)
 # include_directories(ArduinoJson/ArduinoJson)
 # include_directories(ArduinoJson/ArduinoJson/Data)
 # include_directories(ArduinoJson/ArduinoJson/Deserialization)
