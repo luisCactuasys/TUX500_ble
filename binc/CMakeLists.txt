@@ -15,3 +15,4 @@ add_library(Binc
 
 target_include_directories (Binc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(Binc ${GLIB_LIBRARIES} m)
+
