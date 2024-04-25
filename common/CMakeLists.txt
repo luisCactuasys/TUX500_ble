@@ -1,6 +1,6 @@
 
 add_library(Common
-	tools.c
+	tools.cpp
 	base64.cpp
 	json.cpp
     )

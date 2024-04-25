@@ -14,8 +14,8 @@ add_subdirectory(binc)
 add_subdirectory(ble_reader)
 add_subdirectory(ArduinoJson)
 add_subdirectory(common)
-# include_directories(ArduinoJson)
-# include_directories(common)
+include_directories(ArduinoJson)
+include_directories(common)
 # include_directories(ArduinoJson/ArduinoJson)
 # include_directories(ArduinoJson/ArduinoJson/Data)
 # include_directories(ArduinoJson/ArduinoJson/Deserialization)
@@ -24,3 +24,7 @@ add_subdirectory(common)
 # include_directories(ArduinoJson/ArduinoJson/StringTraits)
 # include_directories(ArduinoJson/ArduinoJson/TypeTraits)
 
+
+add_custom_target(my_clean
+    COMMAND git clean -d -f -x
+)
