@@ -7,11 +7,11 @@
 #include <list>
 
 #include "json.h"
-extern "C" {
+// extern "C" {
   #include "tools.h"
-}
+// }
 
-extern "C" int printf_d(const char* fmt, ...);
+extern int printf_d(const char* fmt, ...);
 
 
 std::list<HandlerData*> HandlerDataList;

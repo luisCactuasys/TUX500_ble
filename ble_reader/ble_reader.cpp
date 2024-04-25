@@ -109,6 +109,18 @@ static void* g_MsgQHandle = NULL;
 /*
  * ********************** Private Function Prototypes **************************
  */
+// --------- M3 ----------
+void term(int signum);
+static void daemonize();
+void printf_d(const char* fmt, ...);
+int32_t m3_bleReaderInit();
+
+void* MsgQRxThread(void* pContext);
+int RpcNoHandler(JsonObject& request);
+int RpcSendCardInfo(JsonObject& request);
+
+
+// -------------- Original ------------
 void on_powered_state_changed(Adapter *adapter, gboolean state);
 void on_central_state_changed(Adapter *adapter, Device *device);
 const char *on_local_char_read( const Application *application, const char *address,
@@ -122,10 +134,7 @@ void on_local_char_stop_notify(const Application *application,
 gboolean callback(gpointer data);
 static void cleanup_handler(int signo);
 
-// --------- M3 ----------
-void term(int signum);
-static void daemonize();
-int32_t m3_bleReaderInit();
+
 
 /*
  * ********************** Function definitions *********************************
@@ -143,13 +152,31 @@ int main(void) {
     GDBusConnection *dbusConnection;
     eResult tool_res = FRAMEWORK_SUCCESS;
 
-    daemonize();
+    //daemonize();
 
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
     {    
-        //log_error(TAG, "can't catch SIGINT");
+        //log_error(TAG, "can't catch SIGINT");     
+        /**
+         * TODO: redirect the logger using "logger" API. Instead of outputing
+         *   to stdout one could use the syslog when in daemon
+         * 
+         */
     }
+
+    tool_res = framework_CreateThread(&g_MsgQHandle, MsgQRxThread, NULL);
+    if(FRAMEWORK_SUCCESS != tool_res)
+    {
+        printf_d("Failed to launch MsgQ thread");
+        return -1;
+    }
+
+	  printf_d("##  GPIO/WDOG Daemon  ##\n");
+
+		//framework_CreateMutex(&mutexReversal);
+
+
 
     // Get a DBus connection
     dbusConnection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
@@ -378,6 +405,103 @@ int32_t m3_bleReaderInit()
 }
 
 
+/**
+ * @brief This is the 
+ * 
+ * @param pContext 
+ * @return void* 
+ */
+void* MsgQRxThread(void* pContext)
+{
+	/// AMB
+        
+	if((g_qid = msgget( 31335, IPC_CREAT | 0660 )) == -1)
+	{
+		printf_d("MsgQ get failed\n");
+		//res = 0x11;
+	}
+	else
+		printf_d("MsgQ get OK\n");
+
+
+  JsonRpcAddHandler((char*)"sendCardInfo", RpcSendCardInfo);
+  JsonRpcAddHandler((char*)"*", RpcNoHandler);
+
+	// Clean old messages
+	struct blemsgbuf qbuf;
+	int cleaned = 0;
+	while (!g_exit && msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT) >= 0)	cleaned++;
+	printf_d("Cleaned %d old messages from queue", cleaned);
+
+  memset(&qbuf, 0, sizeof(qbuf));
+  while (!g_exit)
+	{
+		ssize_t rcv;
+		if ((rcv = msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT)) < 0)
+		{
+			// No message or error
+			int err = errno;
+			if (err != ENOMSG) {
+				printf_d("error recv %ld  %d", rcv, err);
+				usleep(5000e3);
+			}
+			usleep(50e3);
+			continue;
+		}
+
+		// Process received message
+		printf_d("Received message: %s", qbuf.mtext);
+		JsonRpcProcess(qbuf.mtext);
+		memset(&qbuf, 0, sizeof(qbuf));
+	}
+
+	/*if (g_qid)
+		msgctl(g_qid, IPC_RMID, NULL);*/
+	printf_d("MsgQRxThread exited");
+  return NULL;
+}
+
+
+/**
+ * @brief   Handler for non-existing method 
+ * 
+ * @param request 
+ * @return   0 if all good 
+ */
+int RpcNoHandler(JsonObject& request)
+{
+  // No handler registered for invoked method
+  std::string id = request["id"].as<char*>();
+
+  if (id.length())
+  {
+    // Send response
+    //MsgQSendError((char*)id.c_str(), -32601, (char*)"Method does not exist");
+  }
+
+  return 0;
+}
+
+
+/**
+ * @brief   This function id used to send the card information to acess control server
+ * 
+ * @param request 
+ * @return  0 if all good 
+ */
+int RpcSendCardInfo(JsonObject& request)
+{
+  // No handler registered for invoked method
+  std::string id = request["id"].as<char*>();
+
+  if (id.length())
+  {
+    // Send response
+    //MsgQSendError((char*)id.c_str(), -32601, (char*)"Method does not exist");
+  }
+
+  return 0;
+}
 
 
 // -------------- Original ------------

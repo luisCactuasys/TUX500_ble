@@ -4,7 +4,8 @@ project(bluez_inc CXX C)
 #set(CMAKE_C_STANDARD 99)
 
 # Show all the warnings
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 include(FindPkgConfig)
 pkg_check_modules(GLIB glib-2.0 gio-2.0 REQUIRED)
