@@ -140,9 +140,10 @@ int32_t m3_bleReaderInit();
  */
 int main(void) {
     
-    // Get a DBus connection
-    GDBusConnection *dbusConnection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
+    GDBusConnection *dbusConnection;
     eResult tool_res = FRAMEWORK_SUCCESS;
+
+    daemonize();
 
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
@@ -150,6 +151,8 @@ int main(void) {
         //log_error(TAG, "can't catch SIGINT");
     }
 
+    // Get a DBus connection
+    dbusConnection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
     // Setup mainloop
     loop = g_main_loop_new(NULL, FALSE);
     // Get the default default_adapter
@@ -157,8 +160,8 @@ int main(void) {
 
     if (default_adapter != NULL) 
     {
-        //log_debug(TAG, "using default_adapter '%s'", 
-        //                binc_adapter_get_path(default_adapter));
+        // log_debug(TAG, "using default_adapter '%s'", 
+        //                 binc_adapter_get_path(default_adapter));
 
         // Make sure the adapter is on
         binc_adapter_set_powered_state_cb(   default_adapter, 
@@ -205,10 +208,10 @@ void printf_d(const char* fmt, ...)
 	va_end(args);
 
 	if (daemonized)
-		syslog(LOG_NOTICE, buf);
+		syslog(LOG_NOTICE, "%s", buf);
 	else
 	{
-		printf(buf);
+		printf("%s", buf);
 		fflush(stdout);
 	}
 }
@@ -481,6 +484,7 @@ void on_local_char_start_notify(const Application *application,
                                 const char *service_uuid, const char *char_uuid)
 {
     //log_debug(TAG, "on start notify");
+    printf_d("%s", "on start notify");
 
     // Check if it is the correct characteristic (tx with "Notify")
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
@@ -495,6 +499,7 @@ void on_local_char_start_notify(const Application *application,
     }
     
     //log_info(TAG, "Notifications Enabled...");
+    printf_d("%s", "Notifications Enabled...");
 }
 
 
