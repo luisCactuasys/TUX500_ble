@@ -147,7 +147,7 @@ int main(void) {
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
     {    
-        log_error(TAG, "can't catch SIGINT");
+        //log_error(TAG, "can't catch SIGINT");
     }
 
     // Setup mainloop
@@ -157,8 +157,8 @@ int main(void) {
 
     if (default_adapter != NULL) 
     {
-        log_debug(TAG, "using default_adapter '%s'", 
-                        binc_adapter_get_path(default_adapter));
+        //log_debug(TAG, "using default_adapter '%s'", 
+        //                binc_adapter_get_path(default_adapter));
 
         // Make sure the adapter is on
         binc_adapter_set_powered_state_cb(   default_adapter, 
@@ -173,7 +173,7 @@ int main(void) {
     } 
     else 
     {
-        log_debug("MAIN", "No default_adapter found");
+        //log_debug("MAIN", "No default_adapter found");
     }
 
     // Bail out after some time
@@ -312,7 +312,7 @@ int32_t m3_bleReaderInit()
 
     // Setup advertisement
     adv_service_uuids = g_ptr_array_new();
-    g_ptr_array_add(adv_service_uuids, M3_TUX_SERVICE_UUID);
+    g_ptr_array_add(adv_service_uuids, (gpointer)M3_TUX_SERVICE_UUID);
 
     advertisement = binc_advertisement_create();
     binc_advertisement_set_local_name(advertisement, "TUX_BLE");
@@ -387,8 +387,8 @@ int32_t m3_bleReaderInit()
  */
 void on_powered_state_changed(Adapter *adapter, gboolean state) 
 {
-    log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
-                                    binc_adapter_get_path(adapter));
+    //log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
+    //                                binc_adapter_get_path(adapter));
 }
 
 /**
@@ -400,11 +400,11 @@ void on_powered_state_changed(Adapter *adapter, gboolean state)
 void on_central_state_changed(Adapter *adapter, Device *device)
 {
     char *deviceToString = binc_device_to_string(device);
-    log_debug(TAG, deviceToString);
+    //log_debug(TAG, deviceToString);
     g_free(deviceToString);
 
-    log_debug(TAG, "remote central %s is %s", binc_device_get_address(device),
-                     binc_device_get_connection_state_name(device));
+    //log_debug(TAG, "remote central %s is %s", binc_device_get_address(device),
+    //                 binc_device_get_connection_state_name(device));
     ConnectionState state = binc_device_get_connection_state(device);
     if (state == BINC_CONNECTED) {
         binc_adapter_stop_advertising(adapter, advertisement);
@@ -426,7 +426,7 @@ void on_central_state_changed(Adapter *adapter, Device *device)
 const char *on_local_char_read( const Application *application, const char *address,
                                 const char *service_uuid, const char *char_uuid) 
 {
-    log_debug(TAG, "on_char_read");
+    //log_debug(TAG, "on_char_read");
     
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
     {
@@ -480,21 +480,21 @@ const char *on_local_char_write(const Application *application, const char *addr
 void on_local_char_start_notify(const Application *application,
                                 const char *service_uuid, const char *char_uuid)
 {
-    log_debug(TAG, "on start notify");
+    //log_debug(TAG, "on start notify");
 
     // Check if it is the correct characteristic (tx with "Notify")
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
     {
-        log_warn(TAG, "start notify: invalid Service");
+        //log_warn(TAG, "start notify: invalid Service");
         return;
     }
     if(!g_str_equal(char_uuid, M3_TUX_CHAR_2_UUID))
     {
-        log_warn(TAG, "start notify: invalid Characteristic");
+        //log_warn(TAG, "start notify: invalid Characteristic");
         return;
     }
     
-    log_info(TAG, "Notifications Enabled...");
+    //log_info(TAG, "Notifications Enabled...");
 }
 
 
@@ -508,8 +508,8 @@ void on_local_char_start_notify(const Application *application,
 void on_local_char_stop_notify(const Application *application, 
                                 const char *service_uuid, const char *char_uuid)
 {
-    log_debug(TAG, "on stop notify");
-    log_info(TAG, "Notifications Disabled...");
+    //log_debug(TAG, "on stop notify");
+    //log_info(TAG, "Notifications Disabled...");
 }
 
 
@@ -548,7 +548,7 @@ gboolean callback(gpointer data) {
  */
 static void cleanup_handler(int signo) {
     if (signo == SIGINT) {
-        log_error(TAG, "received SIGINT");
+        //log_error(TAG, "received SIGINT");
         callback(loop);
     }
 }

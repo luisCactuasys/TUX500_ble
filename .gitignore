@@ -62,3 +62,4 @@ CMakeFiles
 Makefile
 CMakeCache.txt
 *.cmake
+ble_reader.elf
