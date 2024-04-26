@@ -115,10 +115,13 @@ static void daemonize();
 void printf_d(const char* fmt, ...);
 int32_t m3_bleReaderInit();
 
+//thread
 void* MsgQRxThread(void* pContext);
+//message IO
 int MsgQSendError(char* requestId, long errorCode, char* errorMessage);
 int MsgQSendResult(char* requestId, JsonObject& result);
 int MsgQInvoke(char* requestId, char* method, JsonObject& params);
+//requested fuctionalities
 int RpcNoHandler(JsonObject& request);
 int RpcGetVersion(JsonObject& request);
 

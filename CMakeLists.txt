@@ -17,14 +17,9 @@ add_subdirectory(ArduinoJson)
 add_subdirectory(common)
 include_directories(ArduinoJson)
 include_directories(common)
-# include_directories(ArduinoJson/ArduinoJson)
-# include_directories(ArduinoJson/ArduinoJson/Data)
-# include_directories(ArduinoJson/ArduinoJson/Deserialization)
-# include_directories(ArduinoJson/ArduinoJson/Serialization)
-# include_directories(ArduinoJson/ArduinoJson/Serialization)
-# include_directories(ArduinoJson/ArduinoJson/StringTraits)
-# include_directories(ArduinoJson/ArduinoJson/TypeTraits)
 
+# This is a simple application for message Q testing
+add_subdirectory(test_app)
 
 add_custom_target(my_clean
     COMMAND git clean -d -f -x
