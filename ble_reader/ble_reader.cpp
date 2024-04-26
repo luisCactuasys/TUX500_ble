@@ -116,8 +116,11 @@ void printf_d(const char* fmt, ...);
 int32_t m3_bleReaderInit();
 
 void* MsgQRxThread(void* pContext);
+int MsgQSendError(char* requestId, long errorCode, char* errorMessage);
+int MsgQSendResult(char* requestId, JsonObject& result);
+int MsgQInvoke(char* requestId, char* method, JsonObject& params);
 int RpcNoHandler(JsonObject& request);
-int RpcSendCardInfo(JsonObject& request);
+int RpcGetVersion(JsonObject& request);
 
 
 // -------------- Original ------------
@@ -323,7 +326,7 @@ static void daemonize()
     }
 
     /* Open the log file */
-    openlog ("m3bled", LOG_PID, LOG_DAEMON);
+    openlog ("m3btd", LOG_PID, LOG_DAEMON);
 		daemonized = 1;
 }
 
@@ -415,7 +418,7 @@ void* MsgQRxThread(void* pContext)
 {
 	/// AMB
         
-	if((g_qid = msgget( 31335, IPC_CREAT | 0660 )) == -1)
+	if((g_qid = msgget( 31337, IPC_CREAT | 0660 )) == -1)
 	{
 		printf_d("MsgQ get failed\n");
 		//res = 0x11;
@@ -424,7 +427,7 @@ void* MsgQRxThread(void* pContext)
 		printf_d("MsgQ get OK\n");
 
 
-  JsonRpcAddHandler((char*)"sendCardInfo", RpcSendCardInfo);
+  JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
   JsonRpcAddHandler((char*)"*", RpcNoHandler);
 
 	// Clean old messages
@@ -461,6 +464,110 @@ void* MsgQRxThread(void* pContext)
   return NULL;
 }
 
+/**
+ * @brief Send an error response
+ * 
+ * @param requestId 
+ * @param errorCode 
+ * @param errorMessage 
+ * @return int 
+ */
+int MsgQSendError(char* requestId, long errorCode, char* errorMessage)
+{
+	int res = 0;
+
+	// Make sure the request is valid
+	if (requestId && requestId[0])
+	{
+		// Send response
+		struct blemsgbuf qbuf;
+		int length = 0;
+
+		qbuf.mtype = 1;
+		JsonRpcError(requestId, errorCode, errorMessage, qbuf.mtext, sizeof(qbuf.mtext));
+		printf_d("[MsgQSendError] Responding error: %s", qbuf.mtext);
+		
+		length = sizeof(struct blemsgbuf) - sizeof(long);
+		if((res = msgsnd( g_qid, &qbuf, length, IPC_NOWAIT )) == -1)
+		{
+			printf_d("Failed to msgsnd: %d\n", res);
+		}
+		else
+		{
+			printf_d("msgsnd OK %d\n", res);
+		}
+	}
+
+	return res;
+}
+
+/**
+ * @brief Send a result response
+ * 
+ * @param requestId 
+ * @param result 
+ * @return int 
+ */
+int MsgQSendResult(char* requestId, JsonObject& result)
+{
+  	int res = 0;
+	struct blemsgbuf qbuf;
+	int length = 0;
+
+	// Make sure the request is valid
+	if (requestId && requestId[0])
+	{
+		// Send response
+		qbuf.mtype = 1;
+		JsonRpcResult(requestId, result, qbuf.mtext, sizeof(qbuf.mtext));
+		printf_d("[MsgQSendResult] Responding result: %s", qbuf.mtext);
+		
+		length = sizeof(struct blemsgbuf) - sizeof(long);
+		if((res = msgsnd( g_qid, &qbuf, length, IPC_NOWAIT )) == -1)
+		{
+			printf_d("Failed to msgsnd: %d\n", res);
+		}
+		else
+		{
+			printf_d("msgsnd OK %d\n", res);
+		}
+	}
+
+  return res;
+}
+
+/**
+ * @brief Invoke a method
+ * 
+ * @param requestId 
+ * @param method 
+ * @param params 
+ * @return	returns the result of "msgsnd" function.
+ */
+int MsgQInvoke(char* requestId, char* method, JsonObject& params)
+{
+	int res = 0;
+	struct blemsgbuf qbuf;
+	int length = 0;
+
+	// Send invocation	
+	qbuf.mtype = 1;
+	JsonRpcInvoke(requestId, method, params, qbuf.mtext, sizeof(qbuf.mtext));
+	printf_d("[MsgQInvoke] Invoking: %s", qbuf.mtext);
+	
+	length = sizeof(struct blemsgbuf) - sizeof(long);
+	if((res = msgsnd( g_qid, &qbuf, length, IPC_NOWAIT )) == -1)
+	{
+		printf_d("Failed to msgsnd: %d\n", res);
+	}
+	else
+	{
+		printf_d("msgsnd OK %d\n", res);
+	}
+
+	return res;
+}
+
 
 /**
  * @brief   Handler for non-existing method 
@@ -482,25 +589,28 @@ int RpcNoHandler(JsonObject& request)
   return 0;
 }
 
-
 /**
- * @brief   This function id used to send the card information to acess control server
+ * @brief 	Returns a version string
  * 
  * @param request 
- * @return  0 if all good 
+ * @return 	0 if all good
  */
-int RpcSendCardInfo(JsonObject& request)
+int RpcGetVersion(JsonObject& request)
 {
-  // No handler registered for invoked method
-  std::string id = request["id"].as<char*>();
+  	const char secioVersion[16] = "v0.1.2";
+	std::string id = request["id"].as<char*>();
 
-  if (id.length())
-  {
-    // Send response
-    //MsgQSendError((char*)id.c_str(), -32601, (char*)"Method does not exist");
-  }
+	if (id.length())
+	{
+		// Send response
+		StaticJsonBuffer<200> jsonResultBuffer;
+		JsonObject& jsonResult = jsonResultBuffer.createObject();
+		jsonResult["firmwareVersion"] = secioVersion;
 
-  return 0;
+		MsgQSendResult((char*)id.c_str(), jsonResult);
+	}
+
+	return 0;
 }
 
 
