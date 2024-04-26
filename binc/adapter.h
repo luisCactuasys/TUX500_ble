@@ -25,6 +25,7 @@
 #define BINC_ADAPTER_H
 
 #include <gio/gio.h>
+#include <stdlib.h>
 #include "forward_decl.h"
 
 #ifdef __cplusplus

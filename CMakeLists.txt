@@ -1,15 +1,17 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.8)
 project(bluez_inc CXX C)
 
 #set(CMAKE_C_STANDARD 99)
+set(ENV{SYSROOT} $ENV{OECORE_TARGET_SYSROOT})
 
 # Show all the warnings
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -Wall -Wextra -Wno-unused-function -Wno-unused-parameter")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 include(FindPkgConfig)
 pkg_check_modules(GLIB glib-2.0 gio-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
+include_directories($ENV{SYSROOT}/usr/include $ENV{SYSROOT}/usr/include/${TOOLCHAIN_MACHINE})
 
 add_subdirectory(binc)
 add_subdirectory(ble_reader)

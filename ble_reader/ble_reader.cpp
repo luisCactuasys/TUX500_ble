@@ -48,6 +48,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <sys/msg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
