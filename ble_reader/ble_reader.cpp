@@ -421,7 +421,7 @@ void* MsgQRxThread(void* pContext)
 {
 	/// AMB
         
-	if((g_qid = msgget( 31337, IPC_CREAT | 0660 )) == -1)
+	if((g_qid = msgget( 31338, IPC_CREAT | 0660 )) == -1)
 	{
 		printf_d("MsgQ get failed\n");
 		//res = 0x11;
@@ -602,6 +602,11 @@ int RpcGetVersion(JsonObject& request)
 {
   	const char secioVersion[16] = "v0.1.2";
 	std::string id = request["id"].as<char*>();
+    JsonObject& params = request["params"];
+
+    std::string boas = params["boas"].as<char*>(); 
+
+    printf_d(" IN [RpcGetVersion], boas = %s", boas.c_str());
 
 	if (id.length())
 	{
