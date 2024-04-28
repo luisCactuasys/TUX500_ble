@@ -129,9 +129,18 @@ int main() {
             continue;
         }
 
+        const char* cardInfo = "1122334455";
+        StaticJsonBuffer<200> jsonResultBuffer;
+        JsonObject& jsonResult = jsonResultBuffer.parseObject(buf.mtext);
+
+
+
+
+
+
+
         printf("Received message: %s\n", buf.mtext);
         memset(&buf, 0, sizeof(buf));
-        break; // Break after receiving one message for this example
     }
 
     // Close the message queue

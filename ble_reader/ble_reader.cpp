@@ -678,7 +678,7 @@ const char *on_local_char_read( const Application *application, const char *addr
         return BLUEZ_ERROR_REJECTED;
     }
 
-    //does nothing (no charecteristic has read permition)
+    //does nothing (no characteristic has read permition)
     
     return BLUEZ_ERROR_NOT_SUPPORTED;
 }
