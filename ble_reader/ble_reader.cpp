@@ -92,11 +92,13 @@ struct blemsgbuf {
 /*
  * *********************** Private Variables **********************************
  */
+
 GMainLoop *loop = NULL;
 Adapter *default_adapter = NULL;
 GPtrArray *adv_service_uuids = NULL;
 Advertisement *advertisement = NULL;
 Application *app = NULL;
+std::string m3_bleKeyStr;
 
 // ------- M3 --------
 int     g_qid;
@@ -124,6 +126,8 @@ int MsgQInvoke(char* requestId, char* method, JsonObject& params);
 //requested fuctionalities
 int RpcNoHandler(JsonObject& request);
 int RpcGetVersion(JsonObject& request);
+int RpcSetKey(JsonObject& request);
+
 
 
 // -------------- Original ------------
@@ -157,7 +161,8 @@ int main(void) {
     
     GDBusConnection *dbusConnection;
     eResult tool_res = FRAMEWORK_SUCCESS;
-
+    //default Key
+    m3_bleKeyStr = "11111111111111111111111111111111";
     //daemonize();
 
     // Setup handler for CTRL+C
@@ -419,52 +424,52 @@ int32_t m3_bleReaderInit()
  */
 void* MsgQRxThread(void* pContext)
 {
-	/// AMB
+    /// AMB
         
-	if((g_qid = msgget( 31338, IPC_CREAT | 0660 )) == -1)
-	{
-		printf_d("MsgQ get failed\n");
-		//res = 0x11;
-	}
-	else
-		printf_d("MsgQ get OK\n");
+    if((g_qid = msgget( 31337, IPC_CREAT | 0660 )) == -1)
+    {
+        printf_d("MsgQ get failed\n");
+        //res = 0x11;
+    }
+    else
+        printf_d("MsgQ get OK\n");
 
+    JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
+    JsonRpcAddHandler((char*)"setKey", RpcSetKey); 
+    JsonRpcAddHandler((char*)"*", RpcNoHandler);
 
-  JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
-  JsonRpcAddHandler((char*)"*", RpcNoHandler);
+    // Clean old messages
+    struct blemsgbuf qbuf;
+    int cleaned = 0;
+    while (!g_exit && msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT) >= 0)	cleaned++;
+    printf_d("Cleaned %d old messages from queue", cleaned);
 
-	// Clean old messages
-	struct blemsgbuf qbuf;
-	int cleaned = 0;
-	while (!g_exit && msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT) >= 0)	cleaned++;
-	printf_d("Cleaned %d old messages from queue", cleaned);
+    memset(&qbuf, 0, sizeof(qbuf));
+    while (!g_exit)
+        {
+            ssize_t rcv;
+            if ((rcv = msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT)) < 0)
+            {
+                // No message or error
+                int err = errno;
+                if (err != ENOMSG) {
+                    printf_d("error recv %ld  %d", rcv, err);
+                    usleep(5000e3);
+                }
+                usleep(50e3);
+                continue;
+            }
 
-  memset(&qbuf, 0, sizeof(qbuf));
-  while (!g_exit)
-	{
-		ssize_t rcv;
-		if ((rcv = msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT)) < 0)
-		{
-			// No message or error
-			int err = errno;
-			if (err != ENOMSG) {
-				printf_d("error recv %ld  %d", rcv, err);
-				usleep(5000e3);
-			}
-			usleep(50e3);
-			continue;
-		}
+            // Process received message
+            printf_d("Received message: %s", qbuf.mtext);
+            JsonRpcProcess(qbuf.mtext);
+            memset(&qbuf, 0, sizeof(qbuf));
+        }
 
-		// Process received message
-		printf_d("Received message: %s", qbuf.mtext);
-		JsonRpcProcess(qbuf.mtext);
-		memset(&qbuf, 0, sizeof(qbuf));
-	}
-
-	/*if (g_qid)
-		msgctl(g_qid, IPC_RMID, NULL);*/
-	printf_d("MsgQRxThread exited");
-  return NULL;
+        /*if (g_qid)
+            msgctl(g_qid, IPC_RMID, NULL);*/
+        printf_d("MsgQRxThread exited");
+    return NULL;
 }
 
 /**
@@ -586,7 +591,7 @@ int RpcNoHandler(JsonObject& request)
   if (id.length())
   {
     // Send response
-    //MsgQSendError((char*)id.c_str(), -32601, (char*)"Method does not exist");
+    MsgQSendError((char*)id.c_str(), -32601, (char*)"Method does not exist");
   }
 
   return 0;
@@ -617,6 +622,34 @@ int RpcGetVersion(JsonObject& request)
 
 		MsgQSendResult((char*)id.c_str(), jsonResult);
 	}
+
+	return 0;
+}
+
+int RpcSetKey(JsonObject& request)
+{
+	int status = 0;
+    std::string id = request["id"].as<char*>();
+    JsonObject& params = request["params"];
+
+    if (!params.containsKey("key"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+    
+    // else, get the Key and store it
+    m3_bleKeyStr = params["key"].as<char*>();
+
+    if (id.length())
+    {
+        // Send response
+        StaticJsonBuffer<40> jsonResultBuffer;
+        JsonObject& jsonResult = jsonResultBuffer.createObject();
+
+        MsgQSendResult((char*)id.c_str(), jsonResult);
+    }
 
 	return 0;
 }

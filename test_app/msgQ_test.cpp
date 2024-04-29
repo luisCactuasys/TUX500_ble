@@ -95,13 +95,14 @@ int Notify(const char* event, int value)
 int main() {
     
     struct blemsgbuf buf;
-    const char* methodGetVer = "getVersion";
+    const char* methodGetVer = "setKey";
     int requestId = 0;
     std::string requestIdstr = std::to_string(requestId);
-
+    ssize_t rcv;
     int res = 0;
+    
     // Create or open the message queue
-    if ((msgqid = msgget(31338, IPC_CREAT | 0660)) == -1) {
+    if ((msgqid = msgget(31337, IPC_CREAT | 0660)) == -1) {
         perror("msgget");
         exit(EXIT_FAILURE);
     }
@@ -109,15 +110,25 @@ int main() {
 
     StaticJsonBuffer<200> jsonResultBuffer;
     JsonObject& jsonResult = jsonResultBuffer.createObject();
-    jsonResult["boas"] = "e que meus putos 2";
+    jsonResult["key"] = "AABBCC00112233445566778899DDEEFF";
     res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)methodGetVer, jsonResult);
+    printf("Message sent to the queue.\n Waiting for ");
 
-    printf("Message sent to the queue.\n");
+    if ((rcv = msgrcv(msgqid, &buf, sizeof(buf.mtext), MSG_BLE2JSAPP, IPC_NOWAIT)) < 0) {
+            // No message or error
+            int err = errno;
+            if (err != ENOMSG) {
+                perror("msgrcv");
+                usleep(5000e3);
+            }
+            usleep(50e3);
+    }
+    printf("Received message: %s\n", buf.mtext);
 
     // Read messages from the queue
     printf("Reading messages from the queue:\n");
     while (1) {
-        ssize_t rcv;
+       
         if ((rcv = msgrcv(msgqid, &buf, sizeof(buf.mtext), MSG_BLE2JSAPP, IPC_NOWAIT)) < 0) {
             // No message or error
             int err = errno;
@@ -129,17 +140,12 @@ int main() {
             continue;
         }
 
+        printf("Received message: %s\n", buf.mtext);
         const char* cardInfo = "1122334455";
         StaticJsonBuffer<200> jsonResultBuffer;
         JsonObject& jsonResult = jsonResultBuffer.parseObject(buf.mtext);
-
-
-
-
-
-
-
-        printf("Received message: %s\n", buf.mtext);
+        
+        
         memset(&buf, 0, sizeof(buf));
     }
 
