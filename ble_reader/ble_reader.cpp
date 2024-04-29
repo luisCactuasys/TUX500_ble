@@ -66,6 +66,8 @@
 #include "tools.h"
 #include "json.h"
 
+#include "aes.h"
+
 /*
  * ********************** Defines **********************************************
  */
@@ -653,6 +655,18 @@ int RpcSetKey(JsonObject& request)
     }
 
 	return 0;
+}
+
+
+
+int JSNotifyCardInfo(uint32_t appId, const char* cardInfo)
+{
+  StaticJsonBuffer<200> jsonResultBuffer;
+  JsonObject& jsonResult = jsonResultBuffer.createObject();
+  jsonResult["appId"] = appId;
+  jsonResult["cardInfo"] = (char*)cardInfo;
+  
+  return MsgQInvoke(NULL, (char*)"read", jsonResult);
 }
 
 
