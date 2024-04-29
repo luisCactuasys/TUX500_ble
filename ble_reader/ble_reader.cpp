@@ -163,7 +163,7 @@ int main(void) {
     eResult tool_res = FRAMEWORK_SUCCESS;
     //default Key
     m3_bleKeyStr = "11111111111111111111111111111111";
-    //daemonize();
+    daemonize();
 
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
@@ -263,6 +263,7 @@ void term(int signum)
 {
 	g_exit = 1;
     
+    callback(loop);
     /**
      * TODO:
      *      - close and release any reasources
