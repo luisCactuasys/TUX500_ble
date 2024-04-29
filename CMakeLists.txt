@@ -23,6 +23,7 @@ add_subdirectory(ArduinoJson)
 add_subdirectory(common)
 include_directories(ArduinoJson)
 include_directories(common)
+include_directories(ble_reader)
 
 # This is a simple application for message Q testing
 add_subdirectory(test_app)

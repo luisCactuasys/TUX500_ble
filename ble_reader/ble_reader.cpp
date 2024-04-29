@@ -51,7 +51,7 @@
 #include <sys/msg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include "aes.h"
 #include "adapter.h"
 #include "device.h"
 #include "logger.h"
@@ -66,7 +66,7 @@
 #include "tools.h"
 #include "json.h"
 
-#include "aes.h"
+
 
 /*
  * ********************** Defines **********************************************
@@ -100,7 +100,7 @@ Adapter *default_adapter = NULL;
 GPtrArray *adv_service_uuids = NULL;
 Advertisement *advertisement = NULL;
 Application *app = NULL;
-std::string m3_bleKeyStr;
+uint8_t m3_bleKey[16];
 
 // ------- M3 --------
 int     g_qid;
@@ -129,6 +129,9 @@ int MsgQInvoke(char* requestId, char* method, JsonObject& params);
 int RpcNoHandler(JsonObject& request);
 int RpcGetVersion(JsonObject& request);
 int RpcSetKey(JsonObject& request);
+
+int hexStr2Arr(const uint8_t* in, uint8_t* out, size_t len);
+void btox(uint8_t *xp, const uint8_t *bb, int n);
 
 
 
@@ -164,7 +167,9 @@ int main(void) {
     GDBusConnection *dbusConnection;
     eResult tool_res = FRAMEWORK_SUCCESS;
     //default Key
-    m3_bleKeyStr = "11111111111111111111111111111111";
+    std::string bleKeyStr = "11111111111111111111111111111111";
+    hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
+
     daemonize();
 
     // Setup handler for CTRL+C
@@ -632,6 +637,7 @@ int RpcGetVersion(JsonObject& request)
 int RpcSetKey(JsonObject& request)
 {
 	int status = 0;
+    std::string bleKeyStr;
     std::string id = request["id"].as<char*>();
     JsonObject& params = request["params"];
 
@@ -643,7 +649,9 @@ int RpcSetKey(JsonObject& request)
     }
     
     // else, get the Key and store it
-    m3_bleKeyStr = params["key"].as<char*>();
+    bleKeyStr = params["key"].as<char*>();
+
+    hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
     if (id.length())
     {
@@ -669,6 +677,35 @@ int JSNotifyCardInfo(uint32_t appId, const char* cardInfo)
   return MsgQInvoke(NULL, (char*)"read", jsonResult);
 }
 
+
+
+/*
+https://stackoverflow.com/questions/3408706/hexadecimal-string-to-byte-array-in-c
+User: Ali80
+
+/// in: valid chars are 0-9 + A-F + a-f
+/// out_len_max==0: convert until the end of input string, out_len_max>0 only convert this many numbers
+/// returns actual out size
+*/
+int hexStr2Arr(const uint8_t* in, uint8_t* out, size_t len)
+{
+    for (int i = 0; i < len; i++) {
+        uint8_t ch0 = in[2 * i];
+        uint8_t ch1 = in[2 * i + 1];
+        uint8_t nib0 = (ch0 & 0xF) + (ch0 >> 6) | ((ch0 >> 3) & 0x8);
+        uint8_t nib1 = (ch1 & 0xF) + (ch1 >> 6) | ((ch1 >> 3) & 0x8);
+        out[i] = (nib0 << 4) | nib1;
+    }
+    return len;
+}
+
+
+
+void btox(uint8_t *xp, const uint8_t *bb, int n)
+{
+    const char xx[]= "0123456789ABCDEF";
+    while (--n >= 0) xp[n] = xx[(bb[n>>1] >> ((1 - (n&1)) << 2)) & 0xF];
+}
 
 // -------------- Original ------------
 
@@ -745,6 +782,18 @@ const char *on_local_char_read( const Application *application, const char *addr
 const char *on_local_char_write(const Application *application, const char *address, 
         const char *service_uuid, const char *char_uuid, GByteArray *byteArray) 
 {    
+    const uint8_t iv[16] =  {   0xc6, 0x6e, 0xbd, 0x70, 0x9e, 0xc9, 0xee, 0x11,
+                                0x91, 0x1b, 0xa2, 0x71, 0x8c, 0x65, 0xa4, 0x16};
+    uint8_t frame[64];
+    struct AES_ctx ctx;
+    uint32_t *appId;
+    uint8_t  *type;
+    uint16_t *numBytes;
+    uint32_t *frameCRC;
+    uint32_t calcCRC;
+
+    
+
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
     {
         return BLUEZ_ERROR_REJECTED;
@@ -758,6 +807,20 @@ const char *on_local_char_write(const Application *application, const char *addr
     
     // Store received 
     // TODO:
+    if((byteArray->len % 16) != 0)
+        return BLUEZ_ERROR_INVALID_VALUE_LENGTH;
+
+    memcpy(frame, byteArray->data, byteArray->len);
+    
+
+    AES_init_ctx_iv(&ctx, (const uint8_t*)m3_bleKey, (const uint8_t*)iv);
+    AES_CBC_encrypt_buffer(&ctx, frame, (size_t)byteArray->len);
+
+    appId       = (uint32_t*)&frame[1];
+    type        =  (uint8_t*)&frame[5];
+    numBytes    = (uint16_t*)&frame[6];
+
+    JSNotifyCardInfo(*appId, (const char *)&frame[8]);
 
     return NULL;
 }
