@@ -170,7 +170,7 @@ int main(void) {
     std::string bleKeyStr = "11111111111111111111111111111111";
     hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
-    daemonize();
+    //daemonize();
 
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
@@ -653,6 +653,14 @@ int RpcSetKey(JsonObject& request)
 
     hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
+    printf_d("\n[SetKey] keyStr = %s", bleKeyStr.c_str());
+    printf_d("\n[SetKey] keyArray = ");
+
+    for(int i = 0; i < 16; i++)
+    {
+        printf_d("%.2X", m3_bleKey[i]);
+    }
+
     if (id.length())
     {
         // Send response
@@ -814,11 +822,18 @@ const char *on_local_char_write(const Application *application, const char *addr
     
 
     AES_init_ctx_iv(&ctx, (const uint8_t*)m3_bleKey, (const uint8_t*)iv);
-    AES_CBC_encrypt_buffer(&ctx, frame, (size_t)byteArray->len);
+    AES_CBC_decrypt_buffer(&ctx, frame, (size_t)byteArray->len);
 
     appId       = (uint32_t*)&frame[1];
     type        =  (uint8_t*)&frame[5];
     numBytes    = (uint16_t*)&frame[6];
+
+    printf_d("\n[Char Write] decrypted frame = ");
+
+    for(int i = 0; i < byteArray->len; i++)
+    {
+        printf_d("%.2X", frame[i]);
+    }
 
     JSNotifyCardInfo(*appId, (const char *)&frame[8]);
 
