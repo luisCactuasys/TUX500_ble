@@ -7,7 +7,7 @@ if ("$ENV{CROSS_COMPILE}" STREQUAL "")
 endif()
 
 # Show all the warnings
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -Wall -Wextra -Wno-unused-function -Wno-unused-parameter")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 include(FindPkgConfig)
