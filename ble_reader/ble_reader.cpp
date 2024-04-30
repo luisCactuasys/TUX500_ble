@@ -65,6 +65,7 @@
 #include <sys/ioctl.h>
 #include "tools.h"
 #include "json.h"
+#include "M3Crc32.h"
 
 
 
@@ -125,13 +126,22 @@ void* MsgQRxThread(void* pContext);
 int MsgQSendError(char* requestId, long errorCode, char* errorMessage);
 int MsgQSendResult(char* requestId, JsonObject& result);
 int MsgQInvoke(char* requestId, char* method, JsonObject& params);
-//requested fuctionalities
+
+// requested fuctionalities
 int RpcNoHandler(JsonObject& request);
+int RpcSetAutoRead(JsonObject& request);
 int RpcGetVersion(JsonObject& request);
 int RpcSetKey(JsonObject& request);
+int RpcCardAccepted(JsonObject& request);
 
+// request
+int JSNotifyCardInfo(uint32_t appId, const char* cardInfo);
+
+// utility
 int hexStr2Arr(const uint8_t* in, uint8_t* out, size_t len);
 void btox(uint8_t *xp, const uint8_t *bb, int n);
+int8_t m3_comFrameContruct(uint8_t* dest, uint16_t *totalLen, uint32_t appId, 
+                        uint8_t type, const uint8_t* info, uint16_t infoLen);
 
 
 
@@ -367,7 +377,7 @@ int32_t m3_bleReaderInit()
     binc_advertisement_set_local_name(advertisement, "TUX_BLE");
     binc_advertisement_set_services(advertisement, adv_service_uuids);
     g_ptr_array_free(adv_service_uuids, TRUE);
-    binc_adapter_start_advertising(default_adapter, advertisement);
+    //binc_adapter_start_advertising(default_adapter, advertisement);
 
     // Start application
     app = binc_create_application(default_adapter);
@@ -442,8 +452,10 @@ void* MsgQRxThread(void* pContext)
     else
         printf_d("MsgQ get OK\n");
 
+    JsonRpcAddHandler((char*)"setAutoRead", RpcSetAutoRead);
     JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
-    JsonRpcAddHandler((char*)"setKey", RpcSetKey); 
+    JsonRpcAddHandler((char*)"setKey", RpcSetKey);
+    JsonRpcAddHandler((char*)"cardAccepted", RpcCardAccepted);
     JsonRpcAddHandler((char*)"*", RpcNoHandler);
 
     // Clean old messages
@@ -620,7 +632,7 @@ int RpcGetVersion(JsonObject& request)
     std::string boas = params["boas"].as<char*>(); 
 
     printf_d(" IN [RpcGetVersion], boas = %s", boas.c_str());
-
+    
 	if (id.length())
 	{
 		// Send response
@@ -634,6 +646,71 @@ int RpcGetVersion(JsonObject& request)
 	return 0;
 }
 
+
+/**
+ * @brief   Starts or 
+ * 
+ * @param request 
+ * @return int 
+ */
+int RpcSetAutoRead(JsonObject& request)
+{
+	int status = 0;
+    static int m3_bleEnabled = 0;
+    static int m3_bleReaderEnabled = 0;
+
+    std::string bleKeyStr;
+    std::string id = request["id"].as<char*>();
+    JsonObject& params = request["params"];
+
+    if (!params.containsKey("enabled"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+    if (!params.containsKey("readerEnabled"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+
+    // else, get the Key and store it
+    m3_bleEnabled = params["enabled"];
+    m3_bleReaderEnabled = params["readerEnabled"];
+
+    printf_d("\n[SetAutoRead] Enabled = %d", m3_bleEnabled);
+    printf_d("\n[SetAutoRead] ReaderEnabled = %d", m3_bleReaderEnabled);
+
+    if(m3_bleEnabled || m3_bleReaderEnabled)
+    {
+        binc_adapter_start_advertising(default_adapter, advertisement);
+    }
+    else
+    {
+        binc_adapter_stop_advertising(default_adapter, advertisement);
+    }
+
+    if (id.length())
+    {
+        // Send response
+        StaticJsonBuffer<40> jsonResultBuffer;
+        JsonObject& jsonResult = jsonResultBuffer.createObject();
+
+        MsgQSendResult((char*)id.c_str(), jsonResult);
+    }
+
+	return 0;
+}
+
+
+/**
+ * @brief   Gets frame encryption Key  
+ * 
+ * @param request 
+ * @return  0 if all good  
+ */
 int RpcSetKey(JsonObject& request)
 {
 	int status = 0;
@@ -674,7 +751,77 @@ int RpcSetKey(JsonObject& request)
 }
 
 
+/**
+ * @brief   Called when the high level respondes 
+ * 
+ * @param request 
+ * @return  0 if 
+ */
+int RpcCardAccepted(JsonObject& request)
+{
+	int status = 0;
+    uint32_t appId = 0;
+    int accepted = 0;
+    std::string id = request["id"].as<char*>();
+    JsonObject& params = request["params"];
 
+    if (!params.containsKey("appId"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+    if (!params.containsKey("accepted"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+    
+    // else, get the Key and store it
+    appId = params["appId"];
+    accepted = params["accepted"];
+    printf_d("\n[CardAccepted] appId = %X", appId);
+    printf_d("\n[CardAccepted] accepted = %d", accepted);
+
+
+    uint8_t dest[64];
+    uint16_t totalLen;
+    //uint32_t appId; 
+    uint8_t type = 0x06;    //ACK 
+    const uint8_t* info = NULL;
+    uint16_t infoLen = 0;
+
+    m3_comFrameContruct(dest, &totalLen, appId, type, info, infoLen);
+ 
+
+
+    GByteArray *byteArray = g_byte_array_sized_new(sizeof(dest));
+    g_byte_array_append(byteArray, dest, sizeof(dest));
+
+    binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
+
+    if (id.length())
+    {
+        // Send response
+        StaticJsonBuffer<40> jsonResultBuffer;
+        JsonObject& jsonResult = jsonResultBuffer.createObject();
+
+        MsgQSendResult((char*)id.c_str(), jsonResult);
+    }
+
+	return 0;
+}
+
+
+
+/**
+ * @brief 
+ * 
+ * @param appId 
+ * @param cardInfo 
+ * @return int 
+ */
 int JSNotifyCardInfo(uint32_t appId, const char* cardInfo)
 {
   StaticJsonBuffer<200> jsonResultBuffer;
@@ -686,7 +833,7 @@ int JSNotifyCardInfo(uint32_t appId, const char* cardInfo)
 }
 
 
-
+// -------------- M3 utulity ----------
 /*
 https://stackoverflow.com/questions/3408706/hexadecimal-string-to-byte-array-in-c
 User: Ali80
@@ -713,6 +860,52 @@ void btox(uint8_t *xp, const uint8_t *bb, int n)
 {
     const char xx[]= "0123456789ABCDEF";
     while (--n >= 0) xp[n] = xx[(bb[n>>1] >> ((1 - (n&1)) << 2)) & 0xF];
+}
+
+
+/**
+ * @brief   This function construct a frame command acordin gto established 
+ *      protocol
+ * 
+ * @param dest      - beffuer that the frame is to be written to. It must be of
+ *              a suficient size
+ * @param totalLen  - returned size of the total frame 
+ * @param appId     - identification of the device that the frame is directed to
+ * @param type      - type of frame command
+ * @param info      - string to be placed on the "info" field
+ * @param infoLen   - size of the info string
+ * @return      SUCESS if all good 
+ */
+int8_t m3_comFrameContruct(uint8_t* dest, uint16_t *totalLen, uint32_t appId, 
+                        uint8_t type, const uint8_t* info, uint16_t infoLen)
+{
+    uint32_t finalCRC = 0;
+
+    finalCRC = M3Set_crc32_init_value(CRC_INITIALVALUE);
+
+    if(!info)
+    {
+        infoLen = 0;
+    }
+
+            dest[0] = 0x01;
+    memcpy(&dest[1], &appId, sizeof(uint32_t));
+            dest[5] = type;
+            dest[6] = LO_UINT16(infoLen);
+            dest[7] = HI_UINT16(infoLen);
+    if(info)
+    {
+        memcpy(&dest[8], info, infoLen);
+    }
+    dest[8 + infoLen] = 0x04;
+    finalCRC = M3Fast_crc32(finalCRC, &dest[1], 7 + infoLen);
+
+    memcpy(&dest[9 + infoLen], &finalCRC, sizeof(uint32_t));
+
+    // frame header and footer size is 8 and 5 respectiblly 
+    *totalLen = 8 + infoLen + 5;
+    
+    return 0;
 }
 
 // -------------- Original ------------

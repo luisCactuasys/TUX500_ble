@@ -110,20 +110,28 @@ int main() {
 
     StaticJsonBuffer<200> jsonResultBuffer;
     JsonObject& jsonResult = jsonResultBuffer.createObject();
-    jsonResult["key"] = "AABBCC00112233445566778899DDEEFF";
+    //jsonResult["key"] = "AABBCC00112233445566778899DDEEFF";
+    jsonResult["key"] = "11111111111111111111111111111111";
     res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)methodGetVer, jsonResult);
-    printf("Message sent to the queue.\n Waiting for ");
+    printf("Key sent to the queue.\n Waiting for ");
+    
+    StaticJsonBuffer<200> jsonResultBuffer2;
+    JsonObject& jsonResult2 = jsonResultBuffer2.createObject();
+    jsonResult2["enabled"] = "1";
+    jsonResult2["readerEnabled"] = "1";
+    res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)"setAutoRead", jsonResult2);
+    printf("AutoRead sent to the queue.\n Waiting for ");
 
-    if ((rcv = msgrcv(msgqid, &buf, sizeof(buf.mtext), MSG_BLE2JSAPP, IPC_NOWAIT)) < 0) {
-            // No message or error
-            int err = errno;
-            if (err != ENOMSG) {
-                perror("msgrcv");
-                usleep(5000e3);
-            }
-            usleep(50e3);
-    }
-    printf("Received message: %s\n", buf.mtext);
+    // if ((rcv = msgrcv(msgqid, &buf, sizeof(buf.mtext), MSG_BLE2JSAPP, IPC_NOWAIT)) < 0) {
+    //         // No message or error
+    //         int err = errno;
+    //         if (err != ENOMSG) {
+    //             perror("msgrcv");
+    //             usleep(5000e3);
+    //         }
+    //         usleep(50e3);
+    // }
+    // printf("Received message: %s\n", buf.mtext);
 
     // Read messages from the queue
     printf("Reading messages from the queue:\n");
@@ -141,11 +149,27 @@ int main() {
         }
 
         printf("Received message: %s\n", buf.mtext);
-        const char* cardInfo = "1122334455";
-        StaticJsonBuffer<200> jsonResultBuffer;
-        JsonObject& jsonResult = jsonResultBuffer.parseObject(buf.mtext);
-        
-        
+        StaticJsonBuffer<200> jsonReceivedBuffer;
+        JsonObject& jsonReceived = jsonReceivedBuffer.parseObject(buf.mtext);
+        JsonObject& jsonReceivedParams = jsonReceived["params"];
+        uint32_t recvAppId = 0;
+        std::string recvCardInfo;
+        if(!jsonReceivedParams.containsKey("appId"))
+        {
+            recvAppId = jsonReceivedParams["appId"];
+        }
+        if(!jsonReceivedParams.containsKey("cardInfo"))
+        {
+            recvCardInfo = jsonReceivedParams["cardInfo"].as<char*>();
+        }
+
+        StaticJsonBuffer<200> jsonToSendBuffer;
+        JsonObject& jsonToSend = jsonToSendBuffer.parseObject(buf.mtext);
+        jsonToSend["appId"] = recvAppId;
+        jsonToSend["accepted"] = 1;
+        res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)"cardAccepted", jsonToSend);
+
+
         memset(&buf, 0, sizeof(buf));
     }
 
