@@ -156,15 +156,18 @@ int main() {
         std::string recvCardInfo;
         if(!jsonReceivedParams.containsKey("appId"))
         {
-            recvAppId = jsonReceivedParams["appId"];
+            continue;
         }
         if(!jsonReceivedParams.containsKey("cardInfo"))
         {
-            recvCardInfo = jsonReceivedParams["cardInfo"].as<char*>();
+            continue;
         }
 
+        recvAppId = jsonReceivedParams["appId"];
+        recvCardInfo = jsonReceivedParams["cardInfo"].as<char*>();
+
         StaticJsonBuffer<200> jsonToSendBuffer;
-        JsonObject& jsonToSend = jsonToSendBuffer.parseObject(buf.mtext);
+        JsonObject& jsonToSend = jsonToSendBuffer.createObject();
         jsonToSend["appId"] = recvAppId;
         jsonToSend["accepted"] = 1;
         res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)"cardAccepted", jsonToSend);

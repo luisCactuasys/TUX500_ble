@@ -801,14 +801,7 @@ int RpcCardAccepted(JsonObject& request)
 
     binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
 
-    if (id.length())
-    {
-        // Send response
-        StaticJsonBuffer<40> jsonResultBuffer;
-        JsonObject& jsonResult = jsonResultBuffer.createObject();
-
-        MsgQSendResult((char*)id.c_str(), jsonResult);
-    }
+    
 
 	return 0;
 }
