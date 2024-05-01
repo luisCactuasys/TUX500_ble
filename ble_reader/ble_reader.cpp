@@ -82,6 +82,8 @@
 // Characteristic 2. Used to transmit thus as Notify property
 #define M3_TUX_CHAR_2_UUID "0000fff2-0000-1000-8000-00805f9b34fb"
 
+#define MAX_PDU_SIZE 64
+
 /*
  ************************* Sctructs & TypeDefs ********************************  
  */
@@ -142,6 +144,8 @@ int hexStr2Arr(const uint8_t* in, uint8_t* out, size_t len);
 void btox(uint8_t *xp, const uint8_t *bb, int n);
 int8_t m3_comFrameContruct(uint8_t* dest, uint16_t *totalLen, uint32_t appId, 
                         uint8_t type, const uint8_t* info, uint16_t infoLen);
+static uint8_t m3_decryptFrame(uint8_t *src, uint16_t *len);
+static uint8_t m3_encryptFrame(uint8_t *src, uint16_t *len);
 
 
 
@@ -794,14 +798,13 @@ int RpcCardAccepted(JsonObject& request)
 
     m3_comFrameContruct(dest, &totalLen, appId, type, info, infoLen);
  
+    m3_encryptFrame(dest, &totalLen);
 
 
-    GByteArray *byteArray = g_byte_array_sized_new(sizeof(dest));
-    g_byte_array_append(byteArray, dest, sizeof(dest));
+    GByteArray *byteArray = g_byte_array_sized_new(totalLen);
+    g_byte_array_append(byteArray, dest, totalLen);
 
     binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
-
-    
 
 	return 0;
 }
@@ -901,6 +904,75 @@ int8_t m3_comFrameContruct(uint8_t* dest, uint16_t *totalLen, uint32_t appId,
     return 0;
 }
 
+/**
+ * @brief This function verifies, prepares and requests encryption of a frame
+ * 
+ * @param src   - Frame. This is the source array and will be used to return
+ *              the encrypted frame. This buffer must have the necessary space for
+ *              a possible padding. It's up to the user to make sure the buffer is
+ *              long enough.
+ * @param len   - lenght of the total frame
+ * @param iv    - Initialization Vector for AES CBC crypto mode
+ * @return      - 0 if all good, 
+ *                1 if the padded frame has exceeds
+ */
+static uint8_t m3_encryptFrame(uint8_t *src, uint16_t *len)
+{
+    uint8_t auxFrame[MAX_PDU_SIZE];
+    uint16_t auxLen = 0;
+    uint16_t padLen = 16 - (*len % 16);
+    struct AES_ctx ctx;
+    const uint8_t iv[16] =  {   0xc6, 0x6e, 0xbd, 0x70, 0x9e, 0xc9, 0xee, 0x11,
+                                0x91, 0x1b, 0xa2, 0x71, 0x8c, 0x65, 0xa4, 0x16};
+
+    //calculate and set padding
+    auxLen = *len + padLen;
+    if(auxLen >= MAX_PDU_SIZE)
+    {
+        return 1;
+    }
+    memset(&src[*len], padLen, padLen);
+
+    //encrypt
+    AES_init_ctx_iv(&ctx, (const uint8_t*)m3_bleKey, (const uint8_t*)iv);
+    AES_CBC_encrypt_buffer(&ctx, src, auxLen);
+    *len = auxLen;
+
+    return 0;
+}
+
+/**
+ * @brief This function requests decryption, verifies and prepares a frame
+ * 
+ * @param src   - Frame. This is the source array and will be used to return
+ *                the decrypted frame 
+ * @param len   - Lenght of the total frame
+ * @param iv    - Initialization Vector for AES CBC crypto mode
+ * @return      - 0 if all good
+ *                1 if the decrypted frame does not has valid "frameLen"
+ */
+static uint8_t m3_decryptFrame(uint8_t *src, uint16_t *len)
+{
+    uint16_t auxLen = 0;
+    struct AES_ctx ctx;
+    const uint8_t iv[16] =  {   0xc6, 0x6e, 0xbd, 0x70, 0x9e, 0xc9, 0xee, 0x11,
+                                0x91, 0x1b, 0xa2, 0x71, 0x8c, 0x65, 0xa4, 0x16};
+
+
+    AES_init_ctx_iv(&ctx, (const uint8_t*)m3_bleKey, (const uint8_t*)iv);
+    AES_CBC_decrypt_buffer(&ctx, src, (uint16_t)*len);
+
+    //remove possible padding
+    auxLen = 1 + 4 + 1 + 2 + *((uint16_t*)&src[6]) + 1 + 4;
+
+    if(auxLen >= MAX_PDU_SIZE)
+    {
+        return 1;
+    }
+    *len = auxLen;
+
+    return 0;
+}
 // -------------- Original ------------
 
 /**
@@ -976,10 +1048,8 @@ const char *on_local_char_read( const Application *application, const char *addr
 const char *on_local_char_write(const Application *application, const char *address, 
         const char *service_uuid, const char *char_uuid, GByteArray *byteArray) 
 {    
-    const uint8_t iv[16] =  {   0xc6, 0x6e, 0xbd, 0x70, 0x9e, 0xc9, 0xee, 0x11,
-                                0x91, 0x1b, 0xa2, 0x71, 0x8c, 0x65, 0xa4, 0x16};
-    uint8_t frame[64];
-    struct AES_ctx ctx;
+    uint8_t frame[MAX_PDU_SIZE];
+    uint16_t frameTotalLen = 0;
     uint32_t *appId;
     uint8_t  *type;
     uint16_t *numBytes;
@@ -1005,10 +1075,9 @@ const char *on_local_char_write(const Application *application, const char *addr
         return BLUEZ_ERROR_INVALID_VALUE_LENGTH;
 
     memcpy(frame, byteArray->data, byteArray->len);
-    
+    frameTotalLen = byteArray->len;
 
-    AES_init_ctx_iv(&ctx, (const uint8_t*)m3_bleKey, (const uint8_t*)iv);
-    AES_CBC_decrypt_buffer(&ctx, frame, (size_t)byteArray->len);
+    m3_decryptFrame(frame, &frameTotalLen);
 
     appId       = (uint32_t*)&frame[1];
     type        =  (uint8_t*)&frame[5];
@@ -1016,11 +1085,15 @@ const char *on_local_char_write(const Application *application, const char *addr
 
     printf_d("\n[Char Write] decrypted frame = ");
 
-    for(int i = 0; i < byteArray->len; i++)
+    for(int i = 0; i < frameTotalLen; i++)
     {
         printf_d("%.2X", frame[i]);
     }
 
+    /**
+     * TODO: Verify if "frame Info" is a valid string 
+     * 
+     */
     JSNotifyCardInfo(*appId, (const char *)&frame[8]);
 
     return NULL;
