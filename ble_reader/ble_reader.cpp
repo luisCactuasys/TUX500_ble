@@ -134,7 +134,7 @@ int RpcNoHandler(JsonObject& request);
 int RpcSetAutoRead(JsonObject& request);
 int RpcGetVersion(JsonObject& request);
 int RpcSetKey(JsonObject& request);
-int RpcCardAccepted(JsonObject& request);
+int RpcAcknowledge(JsonObject& request);
 
 // request
 int JSNotifyCardInfo(uint32_t appId, const char* cardInfo);
@@ -459,7 +459,7 @@ void* MsgQRxThread(void* pContext)
     JsonRpcAddHandler((char*)"setAutoRead", RpcSetAutoRead);
     JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
     JsonRpcAddHandler((char*)"setKey", RpcSetKey);
-    JsonRpcAddHandler((char*)"cardAccepted", RpcCardAccepted);
+    JsonRpcAddHandler((char*)"acknowledge", RpcAcknowledge);
     JsonRpcAddHandler((char*)"*", RpcNoHandler);
 
     // Clean old messages
@@ -761,11 +761,11 @@ int RpcSetKey(JsonObject& request)
  * @param request 
  * @return  0 if 
  */
-int RpcCardAccepted(JsonObject& request)
+int RpcAcknowledge(JsonObject& request)
 {
-	int status = 0;
+	int ret = 0;
     uint32_t appId = 0;
-    int accepted = 0;
+    std::string status;
     std::string id = request["id"].as<char*>();
     JsonObject& params = request["params"];
 
@@ -775,7 +775,7 @@ int RpcCardAccepted(JsonObject& request)
         MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
         return 0;
     }
-    if (!params.containsKey("accepted"))
+    if (!params.containsKey("status"))
     {
         // Send error response
         MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
@@ -784,9 +784,9 @@ int RpcCardAccepted(JsonObject& request)
     
     // else, get the Key and store it
     appId = params["appId"];
-    accepted = params["accepted"];
-    printf_d("\n[CardAccepted] appId = %X", appId);
-    printf_d("\n[CardAccepted] accepted = %d", accepted);
+    status = params["status"].as<char*>();
+    printf_d("\n[Acknowledge] appId = %X", appId);
+    printf_d("\n[Acknowledge] status = %s", status.c_str());
 
 
     uint8_t dest[64];
@@ -796,17 +796,18 @@ int RpcCardAccepted(JsonObject& request)
     const uint8_t* info = NULL;
     uint16_t infoLen = 0;
 
-    m3_comFrameContruct(dest, &totalLen, appId, type, info, infoLen);
+    ret = m3_comFrameContruct(dest, &totalLen, appId, type, info, infoLen);
  
-    m3_encryptFrame(dest, &totalLen);
+    ret = m3_encryptFrame(dest, &totalLen);
 
 
     GByteArray *byteArray = g_byte_array_sized_new(totalLen);
     g_byte_array_append(byteArray, dest, totalLen);
 
-    binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
+    ret = binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
+    g_byte_array_free(byteArray, TRUE);
 
-	return 0;
+	return ret;
 }
 
 

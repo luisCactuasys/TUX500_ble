@@ -169,8 +169,8 @@ int main() {
         StaticJsonBuffer<200> jsonToSendBuffer;
         JsonObject& jsonToSend = jsonToSendBuffer.createObject();
         jsonToSend["appId"] = recvAppId;
-        jsonToSend["accepted"] = 1;
-        res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)"cardAccepted", jsonToSend);
+        jsonToSend["status"] = "read";
+        res = MsgQInvoke((char*)std::to_string(requestId++).c_str(), (char*)"acknowledge", jsonToSend);
 
 
         memset(&buf, 0, sizeof(buf));
