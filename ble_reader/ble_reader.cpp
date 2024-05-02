@@ -136,7 +136,9 @@ int RpcGetVersion(JsonObject& request);
 int RpcSetKey(JsonObject& request);
 int RpcAcknowledge(JsonObject& request);
 
-// request
+// notes and requests
+int JSNotifyDetect();
+int JSNotifyDeparture();
 int JSNotifyCardInfo(uint32_t appId, const char* cardInfo);
 
 // utility
@@ -811,6 +813,33 @@ int RpcAcknowledge(JsonObject& request)
 }
 
 
+/**
+ * @brief 
+ * 
+ * @return int 
+ */
+int JSNotifyDetect()
+{
+  StaticJsonBuffer<200> jsonNoteBuffer;
+  JsonObject& jsonNote = jsonNoteBuffer.createObject();
+  
+  return MsgQInvoke(NULL, (char*)"detect", jsonNote);
+}
+
+
+/**
+ * @brief 
+ * 
+ * @return int 
+ */
+int JSNotifyDeparture()
+{
+  StaticJsonBuffer<200> jsonNoteBuffer;
+  JsonObject& jsonNote = jsonNoteBuffer.createObject();
+  
+  return MsgQInvoke(NULL, (char*)"Departure", jsonNote);
+}
+
 
 /**
  * @brief 
@@ -821,13 +850,14 @@ int RpcAcknowledge(JsonObject& request)
  */
 int JSNotifyCardInfo(uint32_t appId, const char* cardInfo)
 {
-  StaticJsonBuffer<200> jsonResultBuffer;
-  JsonObject& jsonResult = jsonResultBuffer.createObject();
-  jsonResult["appId"] = appId;
-  jsonResult["cardInfo"] = (char*)cardInfo;
+  StaticJsonBuffer<200> jsonNoteBuffer;
+  JsonObject& jsonNote = jsonNoteBuffer.createObject();
+  jsonNote["appId"] = appId;
+  jsonNote["cardInfo"] = (char*)cardInfo;
   
-  return MsgQInvoke(NULL, (char*)"read", jsonResult);
+  return MsgQInvoke(NULL, (char*)"read", jsonNote);
 }
+
 
 
 // -------------- M3 utulity ----------
@@ -984,8 +1014,11 @@ static uint8_t m3_decryptFrame(uint8_t *src, uint16_t *len)
  */
 void on_powered_state_changed(Adapter *adapter, gboolean state) 
 {
-    //log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
-    //                                binc_adapter_get_path(adapter));
+    // log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
+    //                                 binc_adapter_get_path(adapter));
+
+    printf_d("[powered_state]: powered '%s' (%s)", state ? "on" : "off", 
+                                    binc_adapter_get_path(adapter));
 }
 
 /**
@@ -1004,8 +1037,10 @@ void on_central_state_changed(Adapter *adapter, Device *device)
     //                 binc_device_get_connection_state_name(device));
     ConnectionState state = binc_device_get_connection_state(device);
     if (state == BINC_CONNECTED) {
+        JSNotifyDetect();
         binc_adapter_stop_advertising(adapter, advertisement);
     } else if (state == BINC_DISCONNECTED){
+        JSNotifyDeparture();
         binc_adapter_start_advertising(adapter, advertisement);
     }
 }
