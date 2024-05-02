@@ -1035,6 +1035,10 @@ void on_central_state_changed(Adapter *adapter, Device *device)
 
     //log_debug(TAG, "remote central %s is %s", binc_device_get_address(device),
     //                 binc_device_get_connection_state_name(device));
+    /**
+     * TODO: possible race condition
+     * 
+     */
     ConnectionState state = binc_device_get_connection_state(device);
     if (state == BINC_CONNECTED) {
         JSNotifyDetect();
@@ -1118,12 +1122,20 @@ const char *on_local_char_write(const Application *application, const char *addr
     appId       = (uint32_t*)&frame[1];
     type        =  (uint8_t*)&frame[5];
     numBytes    = (uint16_t*)&frame[6];
-
+    frameCRC    = (uint32_t*)&frame[frameTotalLen - 4];
     printf_d("\n[Char Write] decrypted frame = ");
 
     for(int i = 0; i < frameTotalLen; i++)
     {
         printf_d("%.2X", frame[i]);
+    }
+
+    calcCRC = M3Set_crc32_init_value(CRC_INITIALVALUE);
+    calcCRC = M3Fast_crc32(calcCRC, &frame[1], 4 + 1 + 2 + *numBytes);
+
+    if(*frameCRC != calcCRC)
+    {
+        return BLUEZ_ERROR_REJECTED;
     }
 
     /**
