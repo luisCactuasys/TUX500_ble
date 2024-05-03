@@ -132,6 +132,7 @@ int MsgQInvoke(char* requestId, char* method, JsonObject& params);
 // requested fuctionalities
 int RpcNoHandler(JsonObject& request);
 int RpcSetAutoRead(JsonObject& request);
+int RpcPauseAutoRead(JsonObject& request);
 int RpcGetVersion(JsonObject& request);
 int RpcSetKey(JsonObject& request);
 int RpcAcknowledge(JsonObject& request);
@@ -459,6 +460,7 @@ void* MsgQRxThread(void* pContext)
         printf_d("MsgQ get OK\n");
 
     JsonRpcAddHandler((char*)"setAutoRead", RpcSetAutoRead);
+    JsonRpcAddHandler((char*)"pauseAutoRead", RpcPauseAutoRead);
     JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
     JsonRpcAddHandler((char*)"setKey", RpcSetKey);
     JsonRpcAddHandler((char*)"acknowledge", RpcAcknowledge);
@@ -710,6 +712,63 @@ int RpcSetAutoRead(JsonObject& request)
 	return 0;
 }
 
+/**
+ * @brief   Pauses BLE
+ * 
+ * @param request 
+ * @return int 
+ */
+int RpcPauseAutoRead(JsonObject& request)
+{
+	int status = 0;
+    static int m3_bleEnabled = 0;
+    static int m3_bleReaderEnabled = 0;
+
+    std::string bleKeyStr;
+    std::string id = request["id"].as<char*>();
+    JsonObject& params = request["params"];
+
+    if (!params.containsKey("enabled"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+    if (!params.containsKey("readerEnabled"))
+    {
+        // Send error response
+        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        return 0;
+    }
+
+    // else, get the Key and store it
+    m3_bleEnabled = params["enabled"];
+    m3_bleReaderEnabled = params["readerEnabled"];
+
+    printf_d("\n[SetAutoRead] Enabled = %d", m3_bleEnabled);
+    printf_d("\n[SetAutoRead] ReaderEnabled = %d", m3_bleReaderEnabled);
+
+    if(m3_bleEnabled || m3_bleReaderEnabled)
+    {
+        binc_adapter_start_advertising(default_adapter, advertisement);
+    }
+    else
+    {
+        binc_adapter_stop_advertising(default_adapter, advertisement);
+    }
+
+    if (id.length())
+    {
+        // Send response
+        StaticJsonBuffer<40> jsonResultBuffer;
+        JsonObject& jsonResult = jsonResultBuffer.createObject();
+
+        MsgQSendResult((char*)id.c_str(), jsonResult);
+    }
+
+	return 0;
+}
+
 
 /**
  * @brief   Gets frame encryption Key  
@@ -737,12 +796,6 @@ int RpcSetKey(JsonObject& request)
     hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
     printf_d("\n[SetKey] keyStr = %s", bleKeyStr.c_str());
-    printf_d("\n[SetKey] keyArray = ");
-
-    for(int i = 0; i < 16; i++)
-    {
-        printf_d("%.2X", m3_bleKey[i]);
-    }
 
     if (id.length())
     {
@@ -837,7 +890,7 @@ int JSNotifyDeparture()
   StaticJsonBuffer<200> jsonNoteBuffer;
   JsonObject& jsonNote = jsonNoteBuffer.createObject();
   
-  return MsgQInvoke(NULL, (char*)"Departure", jsonNote);
+  return MsgQInvoke(NULL, (char*)"departure", jsonNote);
 }
 
 
