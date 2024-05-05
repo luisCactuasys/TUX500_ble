@@ -1205,6 +1205,21 @@ void on_local_char_start_notify(const Application *application,
         return;
     }
     
+
+    GList *devList = NULL;
+    ConnectionState currState = BINC_DISCONNECTED;
+    devList = binc_adapter_get_connected_devices(default_adapter);
+
+    for (GList *iterator = devList; iterator; iterator = iterator->next) 
+    {
+        Device *device = (Device *) iterator->data;
+        currState = binc_device_get_connection_state(device) ;
+        char *deviceToString = binc_device_to_string(device);
+        printf_d("\n[Notify - TESTE] Current Device = %s",  deviceToString);
+        g_free(deviceToString);
+        binc_adapter_remove_device(default_adapter, device);
+    }
+
     //log_info(TAG, "Notifications Enabled...");
     printf_d("%s", "Notifications Enabled...");
 }
