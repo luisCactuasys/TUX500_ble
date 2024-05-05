@@ -111,7 +111,9 @@ volatile sig_atomic_t g_exit = 0;
 int daemonized = 0;
 
 static void* g_MsgQHandle = NULL;
-
+static int m3_bleEnabled = 0;
+static int m3_bleReaderEnabled = 0;
+static int m3_blePauseAutoRead = 0;
 
 /*
  * ********************** Private Function Prototypes **************************
@@ -664,10 +666,7 @@ int RpcGetVersion(JsonObject& request)
 int RpcSetAutoRead(JsonObject& request)
 {
 	int status = 0;
-    static int m3_bleEnabled = 0;
-    static int m3_bleReaderEnabled = 0;
 
-    std::string bleKeyStr;
     std::string id = request["id"].as<char*>();
     JsonObject& params = request["params"];
 
@@ -721,20 +720,11 @@ int RpcSetAutoRead(JsonObject& request)
 int RpcPauseAutoRead(JsonObject& request)
 {
 	int status = 0;
-    static int m3_bleEnabled = 0;
-    static int m3_bleReaderEnabled = 0;
 
-    std::string bleKeyStr;
     std::string id = request["id"].as<char*>();
     JsonObject& params = request["params"];
 
-    if (!params.containsKey("enabled"))
-    {
-        // Send error response
-        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
-        return 0;
-    }
-    if (!params.containsKey("readerEnabled"))
+    if (!params.containsKey("pause"))
     {
         // Send error response
         MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
@@ -742,20 +732,9 @@ int RpcPauseAutoRead(JsonObject& request)
     }
 
     // else, get the Key and store it
-    m3_bleEnabled = params["enabled"];
-    m3_bleReaderEnabled = params["readerEnabled"];
+    m3_blePauseAutoRead = params["pause"];
 
-    printf_d("\n[SetAutoRead] Enabled = %d", m3_bleEnabled);
-    printf_d("\n[SetAutoRead] ReaderEnabled = %d", m3_bleReaderEnabled);
-
-    if(m3_bleEnabled || m3_bleReaderEnabled)
-    {
-        binc_adapter_start_advertising(default_adapter, advertisement);
-    }
-    else
-    {
-        binc_adapter_stop_advertising(default_adapter, advertisement);
-    }
+    printf_d("\n[SetAutoRead] Pause = %d", m3_blePauseAutoRead);
 
     if (id.length())
     {

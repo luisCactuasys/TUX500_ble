@@ -1,0 +1,211 @@
+May  3 09:15:33 tux-a4c011111130 daemon.notice m3btd[10640]: Received message: {"jsonrpc":"2.0","id":"0","method":"pauseAutoRead","params":{"pause":false}}
+May  3 09:15:33 tux-a4c011111130 daemon.notice m3btd[10640]: [JsonRpcProcess] Got call for method 'pauseAutoRead'
+May  3 09:15:33 tux-a4c011111130 daemon.notice m3btd[10640]: [MsgQSendError] Responding error: {"jsonrpc":"2.0","id":"0","error":{"code":-32601,"message":"Method does not exist"}}
+May  3 09:15:33 tux-a4c011111130 daemon.notice m3btd[10640]: msgsnd OK 0
+May  3 09:15:41 tux-a4c011111130 daemon.notice m3btd[10640]: Received message: {"jsonrpc":"2.0","id":"1","method":"pauseAutoRead","params":{"pause":false}}
+May  3 09:15:41 tux-a4c011111130 daemon.notice m3btd[10640]: [JsonRpcProcess] Got call for method 'pauseAutoRead'
+May  3 09:15:41 tux-a4c011111130 daemon.notice m3btd[10640]: [MsgQSendError] Responding error: {"jsonrpc":"2.0","id":"1","error":{"code":-32601,"message":"Method does not exist"}}
+May  3 09:15:41 tux-a4c011111130 daemon.notice m3btd[10640]: msgsnd OK 0
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: Received message: {"jsonrpc":"2.0","id":"2","method":"setAutoRead","params":{"enabled":1,"readerEnabled":1}}
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: [JsonRpcProcess] Got call for method 'setAutoRead'
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]:  [SetAutoRead] Enabled = 1
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]:  [SetAutoRead] ReaderEnabled = 1
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"2","result":{}}
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: msgsnd OK 0
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: Received message: {"jsonrpc":"2.0","id":"3","method":"setKey","params":{"key":"11111111111111111111111111111111"}}
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: [JsonRpcProcess] Got call for method 'setKey'
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]:  [SetKey] keyStr = 11111111111111111111111111111111
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]:  [SetKey] keyArray = 
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: 11
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"3","result":{}}
+May  3 09:15:43 tux-a4c011111130 daemon.notice m3btd[10640]: msgsnd OK 0
+May  3 09:17:26 tux-a4c011111130 daemon.notice m3btd[10640]: [MsgQInvoke] Invoking: {"jsonrpc":"2.0","method":"detect"}
+May  3 09:17:26 tux-a4c011111130 daemon.notice m3btd[10640]: msgsnd OK 0
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: on start notify
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: Notifications Enabled...
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]:  [Char Write] decrypted frame = 
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 01
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 00
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 5F
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 32
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: E9
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 02
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 0B
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 00
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 30
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 31
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 39
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 00
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 04
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: F4
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: CC
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: 80
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: B6
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: [MsgQInvoke] Invoking: {"jsonrpc":"2.0","method":"read","params":{"appId":3912392448,"cardInfo":"0000000019"}}
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: msgsnd OK 0
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: Received message: {"jsonrpc":"2.0","method":"acknowledge","params":{"appId":3912392448,"status":"read"}}
+May  3 09:17:28 tux-a4c011111130 daemon.notice m3btd[10640]: [JsonRpcProcess] Got call for method 'acknowledge'
+May  3 09:17:36 tux-a4c011111130 daemon.notice m3btd[11597]: ##  GPIO/WDOG Daemon  ##
+May  3 09:17:36 tux-a4c011111130 daemon.notice m3btd[11597]: MsgQ get OK
+May  3 09:17:36 tux-a4c011111130 daemon.notice m3btd[11597]: Cleaned 0 old messages from queue
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: Received message: {"jsonrpc":"2.0","id":"5","method":"setAutoRead","params":{"enabled":1,"readerEnabled":1}}
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: [JsonRpcProcess] Got call for method 'setAutoRead'
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]:  [SetAutoRead] Enabled = 1
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]:  [SetAutoRead] ReaderEnabled = 1
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"5","result":{}}
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: msgsnd OK 0
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: Received message: {"jsonrpc":"2.0","id":"6","method":"setKey","params":{"key":"11111111111111111111111111111111"}}
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: [JsonRpcProcess] Got call for method 'setKey'
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]:  [SetKey] keyStr = 11111111111111111111111111111111
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]:  [SetKey] keyArray = 
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: 11
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"6","result":{}}
+May  3 09:17:48 tux-a4c011111130 daemon.notice m3btd[11597]: msgsnd OK 0
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: [MsgQInvoke] Invoking: {"jsonrpc":"2.0","method":"detect"}
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: msgsnd OK 0
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: on start notify
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: Notifications Enabled...
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]:  [Char Write] decrypted frame = 
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 01
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 00
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 5F
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 32
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: E9
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 02
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 0B
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 00
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 32
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 30
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 32
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 00
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 04
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 2B
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: 54
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: E1
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: F3
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: [MsgQInvoke] Invoking: {"jsonrpc":"2.0","method":"read","params":{"appId":3912392448,"cardInfo":"0000000202"}}
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: msgsnd OK 0
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: Received message: {"jsonrpc":"2.0","method":"acknowledge","params":{"appId":3912392448,"status":"read"}}
+May  3 09:20:24 tux-a4c011111130 daemon.notice m3btd[11597]: [JsonRpcProcess] Got call for method 'acknowledge'
+May  3 09:20:31 tux-a4c011111130 daemon.notice m3btd[12854]: ##  GPIO/WDOG Daemon  ##
+May  3 09:20:31 tux-a4c011111130 daemon.notice m3btd[12854]: MsgQ get OK
+May  3 09:20:31 tux-a4c011111130 daemon.notice m3btd[12854]: Cleaned 0 old messages from queue
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: Received message: {"jsonrpc":"2.0","id":"8","method":"setAutoRead","params":{"enabled":1,"readerEnabled":1}}
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: [JsonRpcProcess] Got call for method 'setAutoRead'
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]:  [SetAutoRead] Enabled = 1
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]:  [SetAutoRead] ReaderEnabled = 1
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"8","result":{}}
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: msgsnd OK 0
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: Received message: {"jsonrpc":"2.0","id":"9","method":"setKey","params":{"key":"11111111111111111111111111111111"}}
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: [JsonRpcProcess] Got call for method 'setKey'
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]:  [SetKey] keyStr = 11111111111111111111111111111111
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]:  [SetKey] keyArray = 
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: 11
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"9","result":{}}
+May  3 09:20:43 tux-a4c011111130 daemon.notice m3btd[12854]: msgsnd OK 0
+May  3 09:22:50 tux-a4c011111130 daemon.notice m3btd[12854]: [MsgQInvoke] Invoking: {"jsonrpc":"2.0","method":"detect"}
+May  3 09:22:50 tux-a4c011111130 daemon.notice m3btd[12854]: msgsnd OK 0
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: on start notify
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: Notifications Enabled...
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]:  [Char Write] decrypted frame = 
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 01
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 00
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 5F
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 32
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: E9
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 02
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 0B
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 00
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 32
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 30
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 32
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 00
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 04
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 2B
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: 54
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: E1
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: F3
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: [MsgQInvoke] Invoking: {"jsonrpc":"2.0","method":"read","params":{"appId":3912392448,"cardInfo":"0000000202"}}
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: msgsnd OK 0
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: Received message: {"jsonrpc":"2.0","method":"acknowledge","params":{"appId":3912392448,"status":"read"}}
+May  3 09:22:51 tux-a4c011111130 daemon.notice m3btd[12854]: [JsonRpcProcess] Got call for method 'acknowledge'
+May  3 09:23:01 tux-a4c011111130 daemon.notice m3btd[13936]: MsgQ get OK
+May  3 09:23:01 tux-a4c011111130 daemon.notice m3btd[13936]: Cleaned 0 old messages from queue
+May  3 09:23:01 tux-a4c011111130 daemon.notice m3btd[13936]: ##  GPIO/WDOG Daemon  ##
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]: Received message: {"jsonrpc":"2.0","id":"11","method":"setAutoRead","params":{"enabled":1,"readerEnabled":1}}
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]: [JsonRpcProcess] Got call for method 'setAutoRead'
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]:  [SetAutoRead] Enabled = 1
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]:  [SetAutoRead] ReaderEnabled = 1
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]: [MsgQSendResult] Responding result: {"jsonrpc":"2.0","id":"11","result":{}}
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]: msgsnd OK 0
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]: Received message: {"jsonrpc":"2.0","id":"12","method":"setKey","params":{"key":"11111111111111111111111111111111"}}
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]: [JsonRpcProcess] Got call for method 'setKey'
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]:  [SetKey] keyStr = 11111111111111111111111111111111
+May  3 09:23:13 tux-a4c011111130 daemon.notice m3btd[13936]:  [SetKey] keyArray = 
+

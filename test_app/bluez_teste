@@ -1,0 +1,1885 @@
+method return time=1714667776.705423 sender=:1.3 -> destination=:1.1549 serial=5883 reply_serial=2
+   array [
+      dict entry(
+         object path "/org/bluez"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.AgentManager1"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.ProfileManager1"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Adapter1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "B8:8A:60:F7:71:27"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "luiscarlos-GL552VX"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "luiscarlos-GL552VX"
+                  )
+                  dict entry(
+                     string "Class"
+                     variant                         uint32 1835276
+                  )
+                  dict entry(
+                     string "Powered"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Discoverable"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "DiscoverableTimeout"
+                     variant                         uint32 0
+                  )
+                  dict entry(
+                     string "Pairable"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "PairableTimeout"
+                     variant                         uint32 0
+                  )
+                  dict entry(
+                     string "Discovering"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001133-0000-1000-8000-00805f9b34fb"
+                           string "0000110e-0000-1000-8000-00805f9b34fb"
+                           string "00001105-0000-1000-8000-00805f9b34fb"
+                           string "00001132-0000-1000-8000-00805f9b34fb"
+                           string "00001104-0000-1000-8000-00805f9b34fb"
+                           string "00001200-0000-1000-8000-00805f9b34fb"
+                           string "00005005-0000-1000-8000-0002ee000001"
+                           string "00001112-0000-1000-8000-00805f9b34fb"
+                           string "0000110c-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000112f-0000-1000-8000-00805f9b34fb"
+                           string "00001108-0000-1000-8000-00805f9b34fb"
+                           string "0000110b-0000-1000-8000-00805f9b34fb"
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "0000110a-0000-1000-8000-00805f9b34fb"
+                           string "00001106-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Modalias"
+                     variant                         string "usb:v1D6Bp0246d0535"
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattManager1"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.LEAdvertisingManager1"
+               array [
+                  dict entry(
+                     string "ActiveInstances"
+                     variant                         byte 1
+                  )
+                  dict entry(
+                     string "SupportedInstances"
+                     variant                         byte 4
+                  )
+                  dict entry(
+                     string "SupportedIncludes"
+                     variant                         array [
+                           string "tx-power"
+                           string "appearance"
+                           string "local-name"
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.bluez.Media1"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.NetworkServer1"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "5C:FF:EE:EC:9D:43"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "Redmi Note 11S"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "Redmi Note 11S"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000fdaa-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean true
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0028"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattService1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "0000fdaa-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Device"
+                     variant                         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43"
+                  )
+                  dict entry(
+                     string "Primary"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Includes"
+                     variant                         array [
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0028/char002b"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattCharacteristic1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00000009-09da-4bed-9652-f507366fcfc5"
+                  )
+                  dict entry(
+                     string "Service"
+                     variant                         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0028"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Notifying"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Flags"
+                     variant                         array [
+                           string "read"
+                           string "write"
+                           string "notify"
+                        ]
+                  )
+                  dict entry(
+                     string "NotifyAcquired"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0028/char0029"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattCharacteristic1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00000007-09da-4bed-9652-f507366fcfc5"
+                  )
+                  dict entry(
+                     string "Service"
+                     variant                         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0028"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Notifying"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Flags"
+                     variant                         array [
+                           string "read"
+                           string "write"
+                           string "notify"
+                        ]
+                  )
+                  dict entry(
+                     string "NotifyAcquired"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0001"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattService1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00001801-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Device"
+                     variant                         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43"
+                  )
+                  dict entry(
+                     string "Primary"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Includes"
+                     variant                         array [
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0001/char0002"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattCharacteristic1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00002a05-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Service"
+                     variant                         object path "/org/bluez/hci0/dev_5C_FF_EE_EC_9D_43/service0001"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Notifying"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Flags"
+                     variant                         array [
+                           string "indicate"
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2B"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:2B"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_6C_47_60_FB_E4_19"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "6C:47:60:FB:E4:19"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "JBL TUNE225TWS"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "JBL TUNE225TWS"
+                  )
+                  dict entry(
+                     string "Class"
+                     variant                         uint32 2360324
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "audio-card"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001101-0000-1000-8000-00805f9b34fb"
+                           string "0000110b-0000-1000-8000-00805f9b34fb"
+                           string "0000110c-0000-1000-8000-00805f9b34fb"
+                           string "0000110d-0000-1000-8000-00805f9b34fb"
+                           string "0000110e-0000-1000-8000-00805f9b34fb"
+                           string "0000111e-0000-1000-8000-00805f9b34fb"
+                           string "00001200-0000-1000-8000-00805f9b34fb"
+                           string "df21fe2c-2515-4fdb-8886-f12c4d67927c"
+                        ]
+                  )
+                  dict entry(
+                     string "Modalias"
+                     variant                         string "bluetooth:v02B0p0000d001F"
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.MediaControl1"
+               array [
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_1B"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:1B"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_00_1D_29_78_78_13"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "00:1D:29:78:78:13"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "DORO508"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "DORO508"
+                  )
+                  dict entry(
+                     string "Class"
+                     variant                         uint32 5898756
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "phone"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:2D"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean true
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Battery1"
+               array [
+                  dict entry(
+                     string "Percentage"
+                     variant                         byte 60
+                  )
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service000c"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattService1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "0000180a-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Device"
+                     variant                         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D"
+                  )
+                  dict entry(
+                     string "Primary"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Includes"
+                     variant                         array [
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service000c/char000f"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattCharacteristic1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00002a50-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Service"
+                     variant                         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service000c"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Flags"
+                     variant                         array [
+                           string "read"
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service000c/char000d"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattCharacteristic1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00002a29-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Service"
+                     variant                         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service000c"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Flags"
+                     variant                         array [
+                           string "read"
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service0008"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattService1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00001801-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Device"
+                     variant                         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D"
+                  )
+                  dict entry(
+                     string "Primary"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Includes"
+                     variant                         array [
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service0008/char0009"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattCharacteristic1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00002a05-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Service"
+                     variant                         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service0008"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Notifying"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Flags"
+                     variant                         array [
+                           string "indicate"
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service0008/char0009/desc000b"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.GattDescriptor1"
+               array [
+                  dict entry(
+                     string "UUID"
+                     variant                         string "00002902-0000-1000-8000-00805f9b34fb"
+                  )
+                  dict entry(
+                     string "Characteristic"
+                     variant                         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_2D/service0008/char0009"
+                  )
+                  dict entry(
+                     string "Value"
+                     variant                         array [
+                        ]
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_7C_5C_F8_A6_79_DE"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "7C:5C:F8:A6:79:DE"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "DAP00"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "DAP00"
+                  )
+                  dict entry(
+                     string "Class"
+                     variant                         uint32 2752780
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "computer"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_B0_A4_60_B9_20_43"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "B0:A4:60:B9:20:43"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "joao"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "joao"
+                  )
+                  dict entry(
+                     string "Class"
+                     variant                         uint32 786700
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "computer"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Modalias"
+                     variant                         string "usb:v1D6Bp0246d0535"
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_68_72_C3_DE_8F_AF"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "68:72:C3:DE:8F:AF"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "[TV] Samsung 7 Series (50)"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "[TV] Samsung 7 Series (50)"
+                  )
+                  dict entry(
+                     string "Class"
+                     variant                         uint32 787516
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "audio-card"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Modalias"
+                     variant                         string "bluetooth:v04E8p8080d0000"
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_22"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:22"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_15"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:15"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_17"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:17"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_16_3A_7D_7B_F6_8D"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "16:3A:7D:7B:F6:8D"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "DT 3       "
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "DT 3       "
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_29"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:29"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_46_AE_50_BE_58_0A"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "46:AE:50:BE:58:0A"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "public"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string "JBL TUNE225TWS-LE"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string "JBL TUNE225TWS-LE"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000fe2c-0000-1000-8000-00805f9b34fb"
+                           string "01000100-0000-1000-8000-009078563412"
+                           string "86868686-8686-8686-8686-868686868686"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+      dict entry(
+         object path "/org/bluez/hci0/dev_C4_4E_C1_84_2B_1F"
+         array [
+            dict entry(
+               string "org.freedesktop.DBus.Introspectable"
+               array [
+               ]
+            )
+            dict entry(
+               string "org.bluez.Device1"
+               array [
+                  dict entry(
+                     string "Address"
+                     variant                         string "C4:4E:C1:84:2B:1F"
+                  )
+                  dict entry(
+                     string "AddressType"
+                     variant                         string "random"
+                  )
+                  dict entry(
+                     string "Name"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Alias"
+                     variant                         string " HP Travel Mouse"
+                  )
+                  dict entry(
+                     string "Appearance"
+                     variant                         uint16 962
+                  )
+                  dict entry(
+                     string "Icon"
+                     variant                         string "input-mouse"
+                  )
+                  dict entry(
+                     string "Paired"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Trusted"
+                     variant                         boolean true
+                  )
+                  dict entry(
+                     string "Blocked"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "LegacyPairing"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "Connected"
+                     variant                         boolean false
+                  )
+                  dict entry(
+                     string "UUIDs"
+                     variant                         array [
+                           string "00001800-0000-1000-8000-00805f9b34fb"
+                           string "00001801-0000-1000-8000-00805f9b34fb"
+                           string "0000180a-0000-1000-8000-00805f9b34fb"
+                           string "0000180f-0000-1000-8000-00805f9b34fb"
+                           string "00001812-0000-1000-8000-00805f9b34fb"
+                        ]
+                  )
+                  dict entry(
+                     string "Adapter"
+                     variant                         object path "/org/bluez/hci0"
+                  )
+                  dict entry(
+                     string "ServicesResolved"
+                     variant                         boolean false
+                  )
+               ]
+            )
+            dict entry(
+               string "org.freedesktop.DBus.Properties"
+               array [
+               ]
+            )
+         ]
+      )
+   ]
