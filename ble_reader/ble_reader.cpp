@@ -1074,10 +1074,10 @@ void on_central_state_changed(Adapter *adapter, Device *device)
     ConnectionState state = binc_device_get_connection_state(device);
     if (state == BINC_CONNECTED) {
         JSNotifyDetect();
-        //binc_adapter_stop_advertising(adapter, advertisement);
+        binc_adapter_stop_advertising(adapter, advertisement);
     } else if (state == BINC_DISCONNECTED){
         JSNotifyDeparture();
-        //binc_adapter_start_advertising(adapter, advertisement);
+        binc_adapter_start_advertising(adapter, advertisement);
     }
 }
 
