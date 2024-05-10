@@ -209,7 +209,7 @@ int main(void) {
         return -1;
     }
 
-	  printf_d("##  GPIO/WDOG Daemon  ##\n");
+	  printf_d("##  TUX BLE Daemon  ##\n");
 
 		//framework_CreateMutex(&mutexReversal);
 
@@ -243,8 +243,12 @@ int main(void) {
         //log_debug("MAIN", "No default_adapter found");
     }
 
+    //Departure profilatico
+    JSNotifyDeparture();
+
+
     // Bail out after some time
-    g_timeout_add_seconds(600, callback, loop);
+    g_timeout_add_seconds(86400, callback, loop);
 
     // Start the mainloop
     g_main_loop_run(loop);
@@ -800,19 +804,21 @@ int RpcAcknowledge(JsonObject& request)
 	int ret = 0;
     uint32_t appId = 0;
     std::string status;
-    std::string id = request["id"].as<char*>();
+
+    printf_d("\n[RpcAcknowledge] Start");
+
     JsonObject& params = request["params"];
 
     if (!params.containsKey("appId"))
     {
         // Send error response
-        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        printf_d("[RpcAcknowledge] Missing appId");
         return 0;
     }
     if (!params.containsKey("status"))
     {
         // Send error response
-        MsgQSendError((char*)id.c_str(), -32602, (char*)"Missing 'action' parameter");
+        printf_d("[RpcAcknowledge] Missing status");
         return 0;
     }
     
@@ -841,6 +847,7 @@ int RpcAcknowledge(JsonObject& request)
     ret = binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
     g_byte_array_free(byteArray, TRUE);
 
+    printf_d("\n[RpcAcknowledge] Exit");
 	return ret;
 }
 
