@@ -123,6 +123,7 @@ static char m3_currAddr[18];
 void term(int signum);
 static void daemonize();
 void printf_d(const char* fmt, ...);
+void m3_logEventCB(LogLevel level, const char *tag, const char *message);
 int32_t m3_bleReaderInit();
 
 //thread
@@ -190,7 +191,7 @@ int main(void) {
     std::string bleKeyStr = "11111111111111111111111111111111";
     hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
-    //daemonize();
+    daemonize();
 
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
@@ -210,10 +211,9 @@ int main(void) {
         return -1;
     }
 
-	  printf_d("##  TUX BLE Daemon  ##\n");
+	printf_d("##  TUX BLE Daemon  ##\n");
 
-		//framework_CreateMutex(&mutexReversal);
-
+    log_set_handler(m3_logEventCB);
 
 
     // Get a DBus connection
@@ -284,6 +284,19 @@ void printf_d(const char* fmt, ...)
 		fflush(stdout);
 	}
 }
+
+
+void m3_logEventCB(LogLevel level, const char *tag, const char *message)
+{
+	if (daemonized)
+		syslog(LOG_NOTICE, "%s %s", tag, message);
+	else
+	{
+		printf("%s %s", tag, message);
+		fflush(stdout);
+	}
+}
+
 
 /**
  * @brief Flags the rest of the lines of execution to terminate
