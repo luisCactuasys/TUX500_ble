@@ -115,6 +115,7 @@ static int m3_bleEnabled = 0;
 static int m3_bleReaderEnabled = 0;
 static int m3_blePauseAutoRead = 0;
 
+static char m3_currAddr[18];
 /*
  * ********************** Private Function Prototypes **************************
  */
@@ -847,6 +848,11 @@ int RpcAcknowledge(JsonObject& request)
     ret = binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
     g_byte_array_free(byteArray, TRUE);
 
+
+    Device *device = binc_adapter_get_device_by_address(default_adapter, m3_currAddr);
+    binc_adapter_remove_device(default_adapter, device);
+    
+
     printf_d("\n[RpcAcknowledge] Exit");
 	return ret;
 }
@@ -1081,10 +1087,12 @@ void on_central_state_changed(Adapter *adapter, Device *device)
     ConnectionState state = binc_device_get_connection_state(device);
     if (state == BINC_CONNECTED) {
         JSNotifyDetect();
-        //binc_adapter_stop_advertising(adapter, advertisement);
+        memset(m3_currAddr, 0, 18);
+        binc_adapter_stop_advertising(adapter, advertisement);
     } else if (state == BINC_DISCONNECTED){
         JSNotifyDeparture();
-        //binc_adapter_start_advertising(adapter, advertisement);
+        memset(m3_currAddr, 0, 18);
+        binc_adapter_start_advertising(adapter, advertisement);
     }
 }
 
@@ -1134,7 +1142,6 @@ const char *on_local_char_write(const Application *application, const char *addr
     uint16_t *numBytes;
     uint32_t *frameCRC;
     uint32_t calcCRC;
-
     
 
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
@@ -1183,6 +1190,8 @@ const char *on_local_char_write(const Application *application, const char *addr
      */
     JSNotifyCardInfo(*appId, (const char *)&frame[8]);
 
+    strcpy(m3_currAddr, (const char*)address);
+    
     return NULL;
 }
 
