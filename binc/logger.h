@@ -31,13 +31,13 @@ extern "C" {
 #endif
 
 typedef enum LogLevel {
-    LOG_DEBUG = 0, LOG_INFO = 1, LOG_WARN = 2, LOG_ERROR = 3
+    BINC_LOG_DEBUG = 0, BINC_LOG_INFO = 1, BINC_LOG_WARN = 2, BINC_LOG_ERROR = 3
 } LogLevel;
 
-#define log_debug(tag, format, ...) log_log_at_level(LOG_DEBUG, tag, format, ##__VA_ARGS__)
-#define log_info(tag, format, ...)  log_log_at_level(LOG_INFO, tag, format, ##__VA_ARGS__)
-#define log_warn(tag, format, ...)  log_log_at_level(LOG_WARN, tag, format,  ##__VA_ARGS__)
-#define log_error(tag, format, ...) log_log_at_level(LOG_ERROR, tag, format, ##__VA_ARGS__)
+#define log_debug(tag, format, ...) log_log_at_level(BINC_LOG_DEBUG, tag, format, ##__VA_ARGS__)
+#define log_info(tag, format, ...)  log_log_at_level(BINC_LOG_INFO, tag, format, ##__VA_ARGS__)
+#define log_warn(tag, format, ...)  log_log_at_level(BINC_LOG_WARN, tag, format,  ##__VA_ARGS__)
+#define log_error(tag, format, ...) log_log_at_level(BINC_LOG_ERROR, tag, format, ##__VA_ARGS__)
 
 void log_log_at_level(LogLevel level, const char* tag, const char *format, ...);
 

@@ -41,13 +41,13 @@ static struct {
     unsigned int maxFiles;
     size_t currentSize;
     LogEventCallback logCallback;
-} LogSettings = {TRUE, LOG_DEBUG, NULL, "", MAX_FILE_SIZE, MAX_LOGS, 0, NULL};
+} LogSettings = {TRUE, BINC_LOG_DEBUG, NULL, "", MAX_FILE_SIZE, MAX_LOGS, 0, NULL};
 
 static const char *log_level_names[] = {
-        [LOG_DEBUG] = "DEBUG",
-        [LOG_INFO] = "INFO",
-        [LOG_WARN]  = "WARN",
-        [LOG_ERROR]  = "ERROR"
+        [BINC_LOG_DEBUG] = "DEBUG",
+        [BINC_LOG_INFO] = "INFO",
+        [BINC_LOG_WARN]  = "WARN",
+        [BINC_LOG_ERROR]  = "ERROR"
 };
 
 void log_set_level(LogLevel level) {

@@ -191,7 +191,7 @@ int main(void) {
     std::string bleKeyStr = "11111111111111111111111111111111";
     hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
-    daemonize();
+    //daemonize();
 
     // Setup handler for CTRL+C
     if (signal(SIGINT, cleanup_handler) == SIG_ERR)
@@ -207,11 +207,11 @@ int main(void) {
     tool_res = framework_CreateThread(&g_MsgQHandle, MsgQRxThread, NULL);
     if(FRAMEWORK_SUCCESS != tool_res)
     {
-        printf_d("Failed to launch MsgQ thread");
+        printf_d("\n[main]Failed to launch MsgQ thread");
         return -1;
     }
 
-	printf_d("##  TUX BLE Daemon  ##\n");
+	printf_d("\n[main]##  TUX BLE Daemon  ##\n");
 
     log_set_handler(m3_logEventCB);
 
@@ -289,10 +289,10 @@ void printf_d(const char* fmt, ...)
 void m3_logEventCB(LogLevel level, const char *tag, const char *message)
 {
 	if (daemonized)
-		syslog(LOG_NOTICE, "%s %s", tag, message);
+		syslog(LOG_NOTICE, "[BINC-%s] %s", tag, message);
 	else
 	{
-		printf("%s %s", tag, message);
+		printf("\n [BINC-%s] %s", tag, message);
 		fflush(stdout);
 	}
 }
@@ -329,7 +329,7 @@ static void daemonize()
     /* An error occurred */
     if (pid < 0)
     {
-        printf_d("ERROR %d\n", pid);
+        printf_d("\n[daemonize] ERROR %d", pid);
         exit(EXIT_FAILURE);
     }
 
@@ -340,7 +340,7 @@ static void daemonize()
     /* On success: The child process becomes session leader */
     if (setsid() < 0)
     {
-        printf_d("ERROR %d\n", setsid());
+        printf_d("\n[daemonize] ERROR %d", setsid());
         exit(EXIT_FAILURE);
     }
 
@@ -356,7 +356,7 @@ static void daemonize()
     /* An error occurred */
     if (pid < 0)
     {
-        printf_d("ERROR %d\n", pid);
+        printf_d("\n[daemonize] ERROR %d", pid);
         exit(EXIT_FAILURE);
     }
 
@@ -473,11 +473,11 @@ void* MsgQRxThread(void* pContext)
         
     if((g_qid = msgget( 31337, IPC_CREAT | 0660 )) == -1)
     {
-        printf_d("MsgQ get failed\n");
+        printf_d("\n[MsgQRxThread] MsgQ get failed");
         //res = 0x11;
     }
     else
-        printf_d("MsgQ get OK\n");
+        printf_d("\n[MsgQRxThread] MsgQ get OK");
 
     JsonRpcAddHandler((char*)"setAutoRead", RpcSetAutoRead);
     JsonRpcAddHandler((char*)"pauseAutoRead", RpcPauseAutoRead);
@@ -490,7 +490,7 @@ void* MsgQRxThread(void* pContext)
     struct blemsgbuf qbuf;
     int cleaned = 0;
     while (!g_exit && msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT) >= 0)	cleaned++;
-    printf_d("Cleaned %d old messages from queue", cleaned);
+    printf_d("\n[MsgQRxThread] Cleaned %d old messages from queue", cleaned);
 
     memset(&qbuf, 0, sizeof(qbuf));
     while (!g_exit)
@@ -501,7 +501,7 @@ void* MsgQRxThread(void* pContext)
                 // No message or error
                 int err = errno;
                 if (err != ENOMSG) {
-                    printf_d("error recv %ld  %d", rcv, err);
+                    printf_d("[MsgQRxThread] error recv %ld  %d", rcv, err);
                     usleep(5000e3);
                 }
                 usleep(50e3);
@@ -509,14 +509,14 @@ void* MsgQRxThread(void* pContext)
             }
 
             // Process received message
-            printf_d("Received message: %s", qbuf.mtext);
+            printf_d("[MsgQRxThread] Received message: %s", qbuf.mtext);
             JsonRpcProcess(qbuf.mtext);
             memset(&qbuf, 0, sizeof(qbuf));
         }
 
         /*if (g_qid)
             msgctl(g_qid, IPC_RMID, NULL);*/
-        printf_d("MsgQRxThread exited");
+        printf_d("[MsgQRxThread] MsgQRxThread exited");
     return NULL;
 }
 
@@ -546,11 +546,11 @@ int MsgQSendError(char* requestId, long errorCode, char* errorMessage)
 		length = sizeof(struct blemsgbuf) - sizeof(long);
 		if((res = msgsnd( g_qid, &qbuf, length, IPC_NOWAIT )) == -1)
 		{
-			printf_d("Failed to msgsnd: %d\n", res);
+			printf_d("[MsgQRxThread] Failed to msgsnd: %d\n", res);
 		}
 		else
 		{
-			printf_d("msgsnd OK %d\n", res);
+			printf_d("[MsgQRxThread] msgsnd OK %d\n", res);
 		}
 	}
 
@@ -581,11 +581,11 @@ int MsgQSendResult(char* requestId, JsonObject& result)
 		length = sizeof(struct blemsgbuf) - sizeof(long);
 		if((res = msgsnd( g_qid, &qbuf, length, IPC_NOWAIT )) == -1)
 		{
-			printf_d("Failed to msgsnd: %d\n", res);
+			printf_d("\n[MsgQSendResult] Failed to msgsnd: %d", res);
 		}
 		else
 		{
-			printf_d("msgsnd OK %d\n", res);
+			printf_d("\n[MsgQSendResult] msgsnd OK %d", res);
 		}
 	}
 
@@ -609,16 +609,16 @@ int MsgQInvoke(char* requestId, char* method, JsonObject& params)
 	// Send invocation	
 	qbuf.mtype = 1;
 	JsonRpcInvoke(requestId, method, params, qbuf.mtext, sizeof(qbuf.mtext));
-	printf_d("[MsgQInvoke] Invoking: %s", qbuf.mtext);
+	printf_d("\n[MsgQInvoke] Invoking: %s", qbuf.mtext);
 	
 	length = sizeof(struct blemsgbuf) - sizeof(long);
 	if((res = msgsnd( g_qid, &qbuf, length, IPC_NOWAIT )) == -1)
 	{
-		printf_d("Failed to msgsnd: %d\n", res);
+		printf_d("\n[MsgQInvoke] Failed to msgsnd: %d\n", res);
 	}
 	else
 	{
-		printf_d("msgsnd OK %d\n", res);
+		printf_d("\n[MsgQInvoke] msgsnd OK %d\n", res);
 	}
 
 	return res;
@@ -659,7 +659,7 @@ int RpcGetVersion(JsonObject& request)
 
     std::string boas = params["boas"].as<char*>(); 
 
-    printf_d(" IN [RpcGetVersion], boas = %s", boas.c_str());
+    printf_d("\n[RpcGetVersion], boas = %s", boas.c_str());
     
 	if (id.length())
 	{
@@ -826,13 +826,13 @@ int RpcAcknowledge(JsonObject& request)
     if (!params.containsKey("appId"))
     {
         // Send error response
-        printf_d("[RpcAcknowledge] Missing appId");
+        printf_d("\n[RpcAcknowledge] Missing appId");
         return 0;
     }
     if (!params.containsKey("status"))
     {
         // Send error response
-        printf_d("[RpcAcknowledge] Missing status");
+        printf_d("\n[RpcAcknowledge] Missing status");
         return 0;
     }
     
@@ -1072,10 +1072,7 @@ static uint8_t m3_decryptFrame(uint8_t *src, uint16_t *len)
  */
 void on_powered_state_changed(Adapter *adapter, gboolean state) 
 {
-    // log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
-    //                                 binc_adapter_get_path(adapter));
-
-    printf_d("[powered_state]: powered '%s' (%s)", state ? "on" : "off", 
+    log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", 
                                     binc_adapter_get_path(adapter));
 }
 
@@ -1088,11 +1085,11 @@ void on_powered_state_changed(Adapter *adapter, gboolean state)
 void on_central_state_changed(Adapter *adapter, Device *device)
 {
     char *deviceToString = binc_device_to_string(device);
-    //log_debug(TAG, deviceToString);
+    log_debug(TAG, deviceToString);
     g_free(deviceToString);
 
-    //log_debug(TAG, "remote central %s is %s", binc_device_get_address(device),
-    //                 binc_device_get_connection_state_name(device));
+    log_debug(TAG, "remote central %s is %s", binc_device_get_address(device),
+                     binc_device_get_connection_state_name(device));
     /**
      * TODO: possible race condition
      * 
@@ -1122,7 +1119,7 @@ void on_central_state_changed(Adapter *adapter, Device *device)
 const char *on_local_char_read( const Application *application, const char *address,
                                 const char *service_uuid, const char *char_uuid) 
 {
-    //log_debug(TAG, "on_char_read");
+    log_debug(TAG, "on_char_read");
     
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
     {
@@ -1194,6 +1191,7 @@ const char *on_local_char_write(const Application *application, const char *addr
 
     if(*frameCRC != calcCRC)
     {
+        printf_d("\n[Char Write] Bad frame CRC32: frame CRC32=%X, calculated CRC32=%X", *frameCRC, calcCRC);
         return BLUEZ_ERROR_REJECTED;
     }
 
@@ -1219,23 +1217,21 @@ const char *on_local_char_write(const Application *application, const char *addr
 void on_local_char_start_notify(const Application *application,
                                 const char *service_uuid, const char *char_uuid)
 {
-    //log_debug(TAG, "on start notify");
-    printf_d("%s", "on start notify");
+    log_debug(TAG, "on start notify");
 
     // Check if it is the correct characteristic (tx with "Notify")
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
     {
-        //log_warn(TAG, "start notify: invalid Service");
+        log_warn(TAG, "start notify: invalid Service");
         return;
     }
     if(!g_str_equal(char_uuid, M3_TUX_CHAR_2_UUID))
     {
-        //log_warn(TAG, "start notify: invalid Characteristic");
+        log_warn(TAG, "start notify: invalid Characteristic");
         return;
     }
     
-    //log_info(TAG, "Notifications Enabled...");
-    printf_d("%s", "Notifications Enabled...");
+    log_info(TAG, "Notifications Enabled...");
 }
 
 
@@ -1249,8 +1245,8 @@ void on_local_char_start_notify(const Application *application,
 void on_local_char_stop_notify(const Application *application, 
                                 const char *service_uuid, const char *char_uuid)
 {
-    //log_debug(TAG, "on stop notify");
-    //log_info(TAG, "Notifications Disabled...");
+    log_debug(TAG, "on stop notify");
+    log_info(TAG, "Notifications Disabled...");
 }
 
 
@@ -1289,7 +1285,7 @@ gboolean callback(gpointer data) {
  */
 static void cleanup_handler(int signo) {
     if (signo == SIGINT) {
-        //log_error(TAG, "received SIGINT");
+        log_error(TAG, "received SIGINT");
         callback(loop);
     }
 }

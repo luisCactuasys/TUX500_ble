@@ -31,7 +31,7 @@ void* _JsonRpcProcess(void* arg)
   JsonObject& root = jsonReqBuffer.parseObject(json);
 
   const char* methodName = root["method"].as<char*>();
-  printf_d("[JsonRpcProcess] Got call for method '%s'", methodName);
+  printf_d("\n[JsonRpcProcess] Got call for method '%s'", methodName);
   
   MethodHandler defaultHandler = NULL;
   int result = -99;
@@ -68,21 +68,21 @@ int JsonRpcProcess(char* json, bool async)
 
     if (!root.success())
     {
-      printf_d("[JsonRpcProcess] parseObject() failed");
+      printf_d("\n[JsonRpcProcess] parseObject() failed");
       free(json2);
       return -1;
     }
 
     if (root["jsonrpc"] != "2.0")
     {
-      printf_d("[JsonRpcProcess] Not JSON-RPC 2.0");
+      printf_d("\n[JsonRpcProcess] Not JSON-RPC 2.0");
       free(json2);
       return -2;
     }
 
     if (!root["method"].is<char*>())
     {
-      printf_d("[JsonRpcProcess] No valid 'method' argument");
+      printf_d("\n[JsonRpcProcess] No valid 'method' argument");
       free(json2);
       return -3;
     }
