@@ -168,8 +168,6 @@ void on_local_char_start_notify(const Application *application,
 void on_local_char_stop_notify(const Application *application, 
                                 const char *service_uuid, const char *char_uuid);
 gboolean callback(gpointer data);
-static void cleanup_handler(int signo);
-
 
 
 /*
@@ -1294,17 +1292,3 @@ gboolean callback(gpointer data) {
     g_main_loop_quit((GMainLoop *) data);
     return FALSE;
 }
-
-
-/**
- * @brief 
- * 
- * @param signo 
- */
-static void cleanup_handler(int signo) {
-    if (signo == SIGINT) {
-        log_error(TAG, "received SIGINT");
-        callback(loop);
-    }
-}
-
