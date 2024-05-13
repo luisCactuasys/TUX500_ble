@@ -672,12 +672,7 @@ int RpcGetVersion(JsonObject& request)
 {
   	const char secioVersion[16] = "v0.1.2";
 	std::string id = request["id"].as<char*>();
-    JsonObject& params = request["params"];
 
-    std::string boas = params["boas"].as<char*>(); 
-
-    printf_d("\n[RpcGetVersion], boas = %s", boas.c_str());
-    
 	if (id.length())
 	{
 		// Send response
