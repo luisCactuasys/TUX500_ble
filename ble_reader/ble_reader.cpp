@@ -109,16 +109,17 @@ uint8_t m3_bleKey[16];
 int     g_qid;
 volatile sig_atomic_t g_exit = 0;
 int daemonized = 0;
-
 static void* g_MsgQHandle = NULL;
+
 static int m3_bleEnabled = 0;
 static int m3_bleReaderEnabled = 0;
 static int m3_blePauseAutoRead = 0;
-
 static char m3_currAddr[18];
+
 /*
  * ********************** Private Function Prototypes **************************
  */
+
 // --------- M3 ----------
 void term(int signum);
 static void daemonize();
@@ -128,6 +129,7 @@ int32_t m3_bleReaderInit();
 
 //thread
 void* MsgQRxThread(void* pContext);
+
 //message IO
 int MsgQSendError(char* requestId, long errorCode, char* errorMessage);
 int MsgQSendResult(char* requestId, JsonObject& result);
@@ -153,8 +155,6 @@ int8_t m3_comFrameContruct(uint8_t* dest, uint16_t *totalLen, uint32_t appId,
                         uint8_t type, const uint8_t* info, uint16_t infoLen);
 static uint8_t m3_decryptFrame(uint8_t *src, uint16_t *len);
 static uint8_t m3_encryptFrame(uint8_t *src, uint16_t *len);
-
-
 
 // -------------- Original ------------
 void on_powered_state_changed(Adapter *adapter, gboolean state);
@@ -187,23 +187,22 @@ int main(void) {
     
     GDBusConnection *dbusConnection;
     eResult tool_res = FRAMEWORK_SUCCESS;
-    //default Key
-    std::string bleKeyStr = "11111111111111111111111111111111";
+	struct sigaction action;
+	std::string bleKeyStr = "11111111111111111111111111111111";
+
+    //Set default Key
     hexStr2Arr((const uint8_t*)bleKeyStr.c_str(), m3_bleKey, 16);
 
+	// Enter daemon mode and redirect BINC API logging
     //daemonize();
+	log_set_handler(m3_logEventCB);
 
     // Setup handler for CTRL+C
-    if (signal(SIGINT, cleanup_handler) == SIG_ERR)
-    {    
-        //log_error(TAG, "can't catch SIGINT");     
-        /**
-         * TODO: redirect the logger using "logger" API. Instead of outputing
-         *   to stdout one could use the syslog when in daemon
-         * 
-         */
-    }
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = term;
+	sigaction(SIGINT, &action, NULL);
 
+	// Create thread for managing Message Queue RX  
     tool_res = framework_CreateThread(&g_MsgQHandle, MsgQRxThread, NULL);
     if(FRAMEWORK_SUCCESS != tool_res)
     {
@@ -212,9 +211,6 @@ int main(void) {
     }
 
 	printf_d("\n[main]##  TUX BLE Daemon  ##\n");
-
-    log_set_handler(m3_logEventCB);
-
 
     // Get a DBus connection
     dbusConnection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
@@ -260,6 +256,11 @@ int main(void) {
     // Disconnect from DBus
     g_dbus_connection_close_sync(dbusConnection, NULL, NULL);
     g_object_unref(dbusConnection);
+
+	// Wait for the thread to finish
+	framework_JoinThread(g_MsgQHandle);
+
+	printf_d("\n[main] TUX BLE Daemon exiting");
     return 0;
 }
 
@@ -268,6 +269,12 @@ int main(void) {
  * --------------- M3 definitions ------------
 */
 
+/**
+ * @brief 	Prints to stdout or syslog. This depends if the program is daemon or not
+ * 			It functions similar to stdio printf
+ * @param fmt 
+ * @param ... 
+ */
 void printf_d(const char* fmt, ...)
 {
 	va_list args;
@@ -286,18 +293,6 @@ void printf_d(const char* fmt, ...)
 }
 
 
-void m3_logEventCB(LogLevel level, const char *tag, const char *message)
-{
-	if (daemonized)
-		syslog(LOG_NOTICE, "[BINC-%s] %s", tag, message);
-	else
-	{
-		printf("\n [BINC-%s] %s", tag, message);
-		fflush(stdout);
-	}
-}
-
-
 /**
  * @brief Flags the rest of the lines of execution to terminate
  * 
@@ -305,14 +300,12 @@ void m3_logEventCB(LogLevel level, const char *tag, const char *message)
  */
 void term(int signum)
 {
-	g_exit = 1;
+    printf_d("[term] received signal %d", signum);
     
+    // Signal threads to finish ASAP 
+	g_exit = 1;
+    // Clean BLE resources
     callback(loop);
-    /**
-     * TODO:
-     *      - close and release any reasources
-     * 
-     */
 }
 
 /**
@@ -345,10 +338,10 @@ static void daemonize()
     }
 
     /* Catch, ignore and handle signals */
-		struct sigaction action;
+	struct sigaction action;
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = term;
-		sigaction(SIGTERM, &action, NULL);
+	sigaction(SIGTERM, &action, NULL);
 		
     /* Fork off for the second time*/
     pid = fork();
@@ -383,6 +376,23 @@ static void daemonize()
 		daemonized = 1;
 }
 
+
+/**
+ * @brief   This callback is used to redirect the BINC API logging to the syslog
+ * @param level 
+ * @param tag 
+ * @param message 
+ */
+void m3_logEventCB(LogLevel level, const char *tag, const char *message)
+{
+	if (daemonized)
+		syslog(LOG_NOTICE, "[BINC-%s] %s", tag, message);
+	else
+	{
+		printf("\n [BINC-%s] %s", tag, message);
+		fflush(stdout);
+	}
+}
 
 
 /**
@@ -469,7 +479,8 @@ int32_t m3_bleReaderInit()
  */
 void* MsgQRxThread(void* pContext)
 {
-    /// AMB
+    struct blemsgbuf qbuf;
+    int cleaned = 0;
         
     if((g_qid = msgget( 31337, IPC_CREAT | 0660 )) == -1)
     {
@@ -477,8 +488,11 @@ void* MsgQRxThread(void* pContext)
         //res = 0x11;
     }
     else
+	{
         printf_d("\n[MsgQRxThread] MsgQ get OK");
+	}
 
+	// Setting message methods
     JsonRpcAddHandler((char*)"setAutoRead", RpcSetAutoRead);
     JsonRpcAddHandler((char*)"pauseAutoRead", RpcPauseAutoRead);
     JsonRpcAddHandler((char*)"getVersion", RpcGetVersion);
@@ -487,37 +501,41 @@ void* MsgQRxThread(void* pContext)
     JsonRpcAddHandler((char*)"*", RpcNoHandler);
 
     // Clean old messages
-    struct blemsgbuf qbuf;
-    int cleaned = 0;
-    while (!g_exit && msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT) >= 0)	cleaned++;
-    printf_d("\n[MsgQRxThread] Cleaned %d old messages from queue", cleaned);
+    while (!g_exit && msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT) >= 0)	
+	{
+		cleaned++;
+	}
+	printf_d("\n[MsgQRxThread] Cleaned %d old messages from queue", cleaned);
 
+	// Entering RX loop
     memset(&qbuf, 0, sizeof(qbuf));
     while (!g_exit)
-        {
-            ssize_t rcv;
-            if ((rcv = msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT)) < 0)
-            {
-                // No message or error
-                int err = errno;
-                if (err != ENOMSG) {
-                    printf_d("[MsgQRxThread] error recv %ld  %d", rcv, err);
-                    usleep(5000e3);
-                }
-                usleep(50e3);
-                continue;
-            }
+	{
+		ssize_t rcv;
+		if ((rcv = msgrcv(g_qid, &qbuf, sizeof(qbuf.mtext), 2, IPC_NOWAIT)) < 0)
+		{
+			// No message or error
+			int err = errno;
+			if (err != ENOMSG) {
+				printf_d("[MsgQRxThread] error recv %ld  %d", rcv, err);
+				usleep(5000e3);
+			}
+			usleep(50e3);
+			continue;
+		}
 
-            // Process received message
-            printf_d("[MsgQRxThread] Received message: %s", qbuf.mtext);
-            JsonRpcProcess(qbuf.mtext);
-            memset(&qbuf, 0, sizeof(qbuf));
-        }
+		// Process received message
+		printf_d("[MsgQRxThread] Received message: %s", qbuf.mtext);
+		JsonRpcProcess(qbuf.mtext);
+		memset(&qbuf, 0, sizeof(qbuf));
+	}
 
-        /*if (g_qid)
-            msgctl(g_qid, IPC_RMID, NULL);*/
-        printf_d("[MsgQRxThread] MsgQRxThread exited");
-    return NULL;
+	/*if (g_qid)
+		msgctl(g_qid, IPC_RMID, NULL);*/
+	
+	printf_d("[MsgQRxThread] MsgQRxThread exited");
+    
+	return NULL;
 }
 
 /**
@@ -645,6 +663,7 @@ int RpcNoHandler(JsonObject& request)
   return 0;
 }
 
+
 /**
  * @brief 	Returns a version string
  * 
@@ -728,6 +747,7 @@ int RpcSetAutoRead(JsonObject& request)
 
 	return 0;
 }
+
 
 /**
  * @brief   Pauses BLE
@@ -938,8 +958,6 @@ int hexStr2Arr(const uint8_t* in, uint8_t* out, size_t len)
     }
     return len;
 }
-
-
 
 void btox(uint8_t *xp, const uint8_t *bb, int n)
 {
