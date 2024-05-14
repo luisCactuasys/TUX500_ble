@@ -84,6 +84,8 @@
 
 #define MAX_PDU_SIZE 64
 
+#define M3_ADDR_INV "00:00:00:00:00:00"
+
 /*
  ************************* Sctructs & TypeDefs ********************************  
  */
@@ -122,6 +124,7 @@ static char m3_currAddr[18];
 
 // --------- M3 ----------
 void term(int signum);
+void m3_sigAlarmTimeOut(int signum);
 static void daemonize();
 void printf_d(const char* fmt, ...);
 void m3_logEventCB(LogLevel level, const char *tag, const char *message);
@@ -200,6 +203,11 @@ int main(void) {
     action.sa_handler = term;
 	sigaction(SIGINT, &action, NULL);
 
+    // SIGALRM will be used with "alarm(unsigned int seconds)" to generate channel timeout
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = m3_sigAlarmTimeOut;
+	sigaction(SIGALRM, &action, NULL);
+	
 	// Create thread for managing Message Queue RX  
     tool_res = framework_CreateThread(&g_MsgQHandle, MsgQRxThread, NULL);
     if(FRAMEWORK_SUCCESS != tool_res)
@@ -306,6 +314,26 @@ void term(int signum)
     callback(loop);
 }
 
+
+void m3_sigAlarmTimeOut(int signum)
+{
+    printf_d("\n[m3_sigAlarmTimeOut] received signal %d", signum);
+
+    if(!memcmp(m3_currAddr, M3_ADDR_INV, 18))
+    {
+        printf_d("\n[m3_sigAlarmTimeOut] INVALID ADDRESS, no device to disconnect");
+        return;
+    }
+    Device *device = binc_adapter_get_device_by_address(default_adapter, m3_currAddr);
+    binc_adapter_remove_device(default_adapter, device);
+    /**
+     * TODO:
+     *  - verify signal
+     *  - remove/disconnect device
+     *  - maybe protect 
+     * 
+     */
+}
 /**
  * @brief This function puts the process running in the background.
  *      - It closes the IO streams. Any log should be made with log files  
@@ -831,6 +859,12 @@ int RpcAcknowledge(JsonObject& request)
 	int ret = 0;
     uint32_t appId = 0;
     std::string status;
+    uint32_t tillTimeout = 0;
+
+    //verify how much time is left before disconnection
+    tillTimeout = alarm(0);
+    printf_d("\n[RpcAcknowledge] Time left = %d", tillTimeout);
+
 
     printf_d("\n[RpcAcknowledge] Start");
 
@@ -874,10 +908,8 @@ int RpcAcknowledge(JsonObject& request)
     ret = binc_application_notify(app, (const char*)M3_TUX_SERVICE_UUID, (const char *)M3_TUX_CHAR_2_UUID, byteArray);
     g_byte_array_free(byteArray, TRUE);
 
-
-    Device *device = binc_adapter_get_device_by_address(default_adapter, m3_currAddr);
-    binc_adapter_remove_device(default_adapter, device);
-    
+    //Disconnect the device in 1 sec
+    alarm(1);    
 
     printf_d("\n[RpcAcknowledge] Exit");
 	return ret;
@@ -1095,7 +1127,10 @@ void on_powered_state_changed(Adapter *adapter, gboolean state)
  */
 void on_central_state_changed(Adapter *adapter, Device *device)
 {
-    char *deviceToString = binc_device_to_string(device);
+    char *deviceToString = NULL;
+    uint32_t timeLeft = 0;
+
+    deviceToString = binc_device_to_string(device);
     log_debug(TAG, deviceToString);
     g_free(deviceToString);
 
@@ -1107,12 +1142,15 @@ void on_central_state_changed(Adapter *adapter, Device *device)
      */
     ConnectionState state = binc_device_get_connection_state(device);
     if (state == BINC_CONNECTED) {
+        //  Set a post connection timeout, the mobile app has 2 sec 
+        //to send the frame
         JSNotifyDetect();
-        memset(m3_currAddr, 0, 18);
+        memcpy(m3_currAddr, binc_device_get_address(device), 18);
         binc_adapter_stop_advertising(adapter, advertisement);
+        timeLeft = alarm(3);
     } else if (state == BINC_DISCONNECTED){
         JSNotifyDeparture();
-        memset(m3_currAddr, 0, 18);
+        memcpy(m3_currAddr, M3_ADDR_INV, 18);
         binc_adapter_start_advertising(adapter, advertisement);
     }
 }
@@ -1163,7 +1201,11 @@ const char *on_local_char_write(const Application *application, const char *addr
     uint16_t *numBytes;
     uint32_t *frameCRC;
     uint32_t calcCRC;
-    
+    uint32_t tillTimeout = 0;
+
+    //verify how much time is left before disconnection
+    tillTimeout = alarm(0);
+    printf_d("\n[Char Write] Time left = %d", tillTimeout);
 
     if(!g_str_equal(service_uuid, M3_TUX_SERVICE_UUID))
     {
@@ -1212,7 +1254,9 @@ const char *on_local_char_write(const Application *application, const char *addr
      */
     JSNotifyCardInfo(*appId, (const char *)&frame[8]);
 
-    strcpy(m3_currAddr, (const char*)address);
+    //  Set a post connection timeout, the JS app has 5 sec 
+    //to send an Acknolage
+    alarm(5);
     
     return NULL;
 }
