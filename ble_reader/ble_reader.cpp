@@ -76,7 +76,7 @@
 #define CUD_CHAR "00002901-0000-1000-8000-00805f9b34fb"
 
 // "BLE Reader" Primary Service
-#define M3_TUX_SERVICE_UUID "0000fff0-0000-1000-8000-00805f9b34fb"
+#define M3_TUX_SERVICE_UUID "0000fff5-0000-1000-8000-00805f9b34fb"
 // Characteristic 1. Used to receive thus as Write property 
 #define M3_TUX_CHAR_1_UUID "0000fff1-0000-1000-8000-00805f9b34fb"
 // Characteristic 2. Used to transmit thus as Notify property
